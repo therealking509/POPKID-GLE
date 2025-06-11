@@ -9,7 +9,7 @@ const chatbotcommand = async (m, Matrix) => {
     const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
     const text = m.body.slice(prefix.length + cmd.length).trim();
 
-    if (cmd === 'chatbot') {
+    if (cmd === 'chatbot2') {
         if (!isCreator) return m.reply("*Only admin*");
 
         let responseMessage;
