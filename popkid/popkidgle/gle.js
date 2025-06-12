@@ -2,64 +2,99 @@ import config from '../../config.cjs';
 
 const menu = async (m, sock) => {
   const prefix = config.PREFIX;
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
-  const text = m.body.slice(prefix.length + cmd.length).trim();
+  const rawCmd = (
+    m.message?.buttonsResponseMessage?.selectedButtonId ||
+    m.message?.templateButtonReplyMessage?.selectedId ||
+    m.body || ''
+  ).trim();
+
+  const cmd = rawCmd.startsWith(prefix) ? rawCmd.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+  const text = rawCmd.slice(prefix.length + cmd.length).trim();
 
   if (cmd === "popkidmenu") {
-    const start = Date.now();
-    await m.React('💻');
-    const responseTime = (Date.now() - start) / 1000;
+    const start = new Date().getTime();
+    await m.react('💻');
+    const end = new Date().getTime();
+    const responseTime = (end - start) / 1000;
 
-    let profilePictureUrl = 'https://i.imgur.com/EJf0JxA.jpeg';
+    let profilePictureUrl = 'https://i.ibb.co/HhMTvSP/hack-menu.jpg'; // Hacker-style fallback image
     try {
       const pp = await sock.profilePictureUrl(m.sender, 'image');
       if (pp) profilePictureUrl = pp;
-    } catch {}
+    } catch (e) {
+      console.error("PP fetch failed:", e);
+    }
 
     const menuText = `
-╔══════════════════════╗
-║ 💻 𝗣𝗢𝗣𝗞𝗜𝗗-𝗫𝗠𝗗 [𝕳𝖆𝖈𝖐𝖊𝖗 𝕸𝖔𝖉𝖊] 💻
-╠══════════════════════╣
-║ ⚡ Speed: ${responseTime.toFixed(2)}s
-║ 🧬 Version: 7.1.0
-║ 👤 Owner: ${config.OWNER_NAME}
-╚══════════════════════╝
+┏━━━━━━━━━━━━━━━━━━━┓
+┃   👾  𝐏𝐎𝐏𝐊𝐈𝐃-𝐗𝐌𝐃 𝐁𝐎𝐓  👾
+┗━━━━━━━━━━━━━━━━━━━┛
 
-🧠 GPT/AI • 🎧 Media • 🔍 Search • 🛠️ Tools
-Use commands like:
-> ${prefix}ai | ${prefix}play | ${prefix}google
+🔹 ᴠᴇʀꜱɪᴏɴ : 7.1.0
+🔹 ʀᴇꜱᴘᴏɴꜱᴇ : ${responseTime}s
+🔹 ᴍᴏᴅᴇ : ${config.MODE.toUpperCase()}
+🔹 ᴅᴇᴠ : 👨‍💻 POPKID
 
-☠️ SYSTEM TOOLS
-> ${prefix}ping — Latency Test
-> ${prefix}uptime — Bot Uptime
-> ${prefix}alive — Is bot running?
+⚙️  *SYSTEM COMMANDS*:
+│ ${prefix}menu
+│ ${prefix}alive
+│ ${prefix}owner
+│ ${prefix}ping
+│ ${prefix}uptime
 
-⚔️ ADMIN PANEL
-> ${prefix}block, ${prefix}unblock, ${prefix}setstatus
+👑  *OWNER CONTROLS*:
+│ ${prefix}block
+│ ${prefix}unblock
+│ ${prefix}anticall
+│ ${prefix}autobio
+│ ${prefix}setppbot
 
-🤖 Chat: ${config.CHAT_BOT ? "🟢 ON" : "🔴 OFF"}
-💬 Mode: ${config.MODE}
-    `.trim();
+🧠  *GPT/AI TOOLS*:
+│ ${prefix}ai
+│ ${prefix}gpt
+│ ${prefix}dalle
+│ ${prefix}chatbot
+
+📤  *DOWNLOADERS*:
+│ ${prefix}play
+│ ${prefix}facebook
+│ ${prefix}instagram
+│ ${prefix}tiktok
+
+🎭  *FUN / EXTRAS*:
+│ ${prefix}attp
+│ ${prefix}getpp
+│ ${prefix}google
+│ ${prefix}lyrics
+
+🌐  *INFO / UTILS*:
+│ ${prefix}report
+│ ${prefix}bug
+│ ${prefix}imdb
+
+━━━━━━━━━━━━━━━━━━━━
+🔐 ᴄᴜꜱᴛᴏᴍ ʙᴏᴛ ᴇɴɢɪɴᴇ ʙʏ ᴘᴏᴘᴋɪᴅ ☠️
+`.trim();
 
     await sock.sendMessage(m.from, {
       image: { url: profilePictureUrl },
       caption: menuText,
-      footer: '💻 Popkid-XMD Hacker Menu',
-      templateButtons: [
-        { index: 1, quickReplyButton: { displayText: '⚡ Ping', id: `${prefix}ping` } },
-        { index: 2, quickReplyButton: { displayText: '🕒 Uptime', id: `${prefix}uptime` } },
-        { index: 3, quickReplyButton: { displayText: '🧪 Alive', id: `${prefix}alive` } },
+      buttons: [
+        { buttonId: `${prefix}ping`, buttonText: { displayText: '🛰️ Ping' }, type: 1 },
+        { buttonId: `${prefix}uptime`, buttonText: { displayText: '⏱️ Uptime' }, type: 1 }
       ],
+      footer: '👾 POPKID-XMD BOT 👾\n🔗 Powered by Popkid',
+      headerType: 4,
       contextInfo: {
         forwardingScore: 999,
         isForwarded: true,
         externalAdReply: {
-          title: `⚙️ ${config.BOT_NAME} Menu`,
-          body: `Secure | Fast | Hacker Styled`,
+          title: '👾 POPKID-XMD BOT',
+          body: 'Next-gen WhatsApp automation',
           thumbnailUrl: profilePictureUrl,
+          sourceUrl: 'https://github.com/popkid-md',
           mediaType: 1,
-          renderLargerThumbnail: true,
-          sourceUrl: 'https://github.com/PopkidOfficial'
+          renderLargerThumbnail: true
         }
       }
     }, { quoted: m });
