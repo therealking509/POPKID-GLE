@@ -43,6 +43,7 @@ const config = {
   OWNER_NUMBER: process.env.OWNER_NUMBER || "254111385747",
   SUDO_NUMBER: process.env.SUDO_NUMBER || "254111385747",
   GEMINI_KEY: process.env.GEMINI_KEY || "AIzaSyCUPaxfIdZawsKZKqCqJcC-GWiQPCXKTDc",
+  BLOCK_UNKNOWN: process.env.BLOCK_UNKNOWN !== undefined ? process.env.BLOCK_UNKNOWN === 'true' : false,
   WELCOME: process.env.WELCOME !== undefined ? process.env.WELCOME === 'true' : false, 
 };
 
