@@ -21,11 +21,6 @@ const app = _0x18d022();
 let useQR = false;
 let initialConnection = true;
 const PORT = process.env.PORT || 0xbb8;
-
-console.log(chalk.cyanBright("╭────────────────────────────────────────╮"));
-console.log(chalk.greenBright("│ 🚀 POPKID-GLE BOT is starting on Heroku..."));
-console.log(chalk.greenBright(`│ 🌐 PORT: ${PORT}`));
-console.log(chalk.cyanBright("╰────────────────────────────────────────╯"));
 const MAIN_LOGGER = _0x21ddd0({
   'timestamp': () => ",\"time\":\"" + new Date().toJSON() + "\""
 });
@@ -41,7 +36,7 @@ if (!_0x3b40d6.existsSync(sessionDir)) {
   });
 }
 async function downloadSessionData() {
-  console.log(chalk.greenBright(`[✔ BOT ONLINE] SESSION_ID loaded: ${_0x175656.SESSION_ID || "N/A"}`));
+  console.log("Debugging SESSION_ID:", _0x175656.SESSION_ID);
   if (!_0x175656.SESSION_ID) {
     console.error("❌ Please add your session to SESSION_ID env !!");
     return false;
