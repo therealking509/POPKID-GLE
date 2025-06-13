@@ -58,7 +58,7 @@ const gcEvent = async (m, Matrix) => {
       try {
         profilePictureUrl = await Matrix.profilePictureUrl(m.chat, 'image');
       } catch {
-        profilePictureUrl = 'https://telegra.ph/file/265c672092d5aa5756fcf.jpg';
+        profilePictureUrl = 'https://files.catbox.moe/kiy0hl.jpg';
       }
 
       await Matrix.sendMessage(m.from, {
