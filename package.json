@@ -5,11 +5,15 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "pm2 start index.js --deep-monitoring --attach --name POPKID-GLE",
+    "start": "node index.js",
     "stop": "pm2 stop POPKID-GLE",
     "restart": "pm2 restart POPKID-GLE"
   },
-  "keywords": ["inconnu-boy", "whatsapp-bot", "whatsapp md bot"],
+  "keywords": [
+    "inconnu-boy",
+    "whatsapp-bot",
+    "whatsapp md bot"
+  ],
   "author": "POPKID-GLE",
   "license": "ISC",
   "dependencies": {
