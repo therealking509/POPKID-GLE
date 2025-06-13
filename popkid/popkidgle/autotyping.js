@@ -1,57 +1,54 @@
 import config from '../../config.cjs';
 
 const autotypingCommand = async (m, Matrix) => {
-  const botNumber = await Matrix.decodeJid(Matrix.user.id);
-  const isOwner = [botNumber, `${config.OWNER_NUMBER}@s.whatsapp.net`].includes(m.sender);
-  const prefix = config.PREFIX;
+  try {
+    const botNumber = await Matrix.decodeJid(Matrix.user.id);
+    const isOwner = [botNumber, `${config.OWNER_NUMBER}@s.whatsapp.net`].includes(m.sender);
+    const prefix = config.PREFIX;
 
-  const command = m.body.startsWith(prefix)
-    ? m.body.slice(prefix.length).split(' ')[0].toLowerCase()
-    : '';
+    if (!m.body.startsWith(prefix)) return;
 
-  const args = m.body.slice(prefix.length + command.length).trim();
+    const [cmd, ...rest] = m.body.slice(prefix.length).trim().split(/\s+/);
+    const command = cmd.toLowerCase();
+    const args = rest.join(' ').toLowerCase();
 
-  if (command !== 'autotyping') return;
+    if (command !== 'autotyping') return;
+    if (!isOwner) return m.reply('📛 *THIS IS AN OWNER-ONLY COMMAND*');
 
-  if (!isOwner) {
-    return m.reply('📛 *THIS IS AN OWNER-ONLY COMMAND*');
-  }
+    let replyText;
 
-  let message;
+    switch (args) {
+      case 'on':
+        config.AUTO_TYPING = true;
+        replyText = '✅ *Auto-Typing has been enabled.*';
+        break;
 
-  switch (args) {
-    case 'on':
-      config.AUTO_TYPING = true;
-      message = '💬 *Auto-Typing has been enabled.*';
-      break;
+      case 'off':
+        config.AUTO_TYPING = false;
+        replyText = '❌ *Auto-Typing has been disabled.*';
+        break;
 
-    case 'off':
-      config.AUTO_TYPING = false;
-      message = '🔕 *Auto-Typing has been disabled.*';
-      break;
-
-    default:
-      const status = config.AUTO_TYPING ? '🟢 ON' : '🔴 OFF';
-      message = `
-╭─⧉  *Auto-Typing Settings*
+      default:
+        replyText = `
+╭───⧉  *Auto-Typing Settings*
 │
-│ 🖊️ *Status:* ${status}
+│ 🖊️ *Status:* ${config.AUTO_TYPING ? '🟢 ON' : '🔴 OFF'}
 │
 │ 🔧 *Usage:*
-│ • \`autotyping on\` — Enable auto typing
-│ • \`autotyping off\` — Disable auto typing
+│ • \`${prefix}autotyping on\` — Enable auto typing
+│ • \`${prefix}autotyping off\` — Disable auto typing
 │
 ╰────⟡ *Popkid-AI Control Panel*
-`.trim();
-      break;
-  }
+        `.trim();
+        break;
+    }
 
-  try {
-    await Matrix.sendMessage(m.from, { text: message }, { quoted: m });
+    await Matrix.sendMessage(m.from, { text: replyText }, { quoted: m });
+
   } catch (err) {
-    console.error('[AutoTyping Error]', err.message);
+    console.error('[AutoTyping Error]', err);
     await Matrix.sendMessage(m.from, {
-      text: '❌ *An error occurred while processing your request.*'
+      text: '🚫 *An error occurred while processing your request.*'
     }, { quoted: m });
   }
 };
