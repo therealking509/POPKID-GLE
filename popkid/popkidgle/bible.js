@@ -33,7 +33,7 @@ const showLanguageMenu = () => {
     .join('\n');
 
   return `
-🌐 *Supported Languages:*
+🌍 *Supported Languages:*
 ${list}
 `.trim();
 };
@@ -45,39 +45,59 @@ const bible = async (m, sock) => {
     : '';
 
   const query = m.body.slice(prefix.length + command.length).trim();
-
   if (command !== 'bible') return;
 
-  // Parse language
   const langMatch = query.match(/--lang=([a-z]{2})/i);
   const lang = langMatch ? langMatch[1].toLowerCase() : 'en';
   const verseQuery = query.replace(/--lang=([a-z]{2})/i, '').trim();
 
   if (!verseQuery) {
     return sock.sendMessage(m.from, {
-      text: `📖 *Usage:* \`.bible John 3:16 --lang=fr\`\n\n${showLanguageMenu()}`
+      text: `📖 *Usage:* \`${prefix}bible John 3:16 --lang=fr\`\n\n${showLanguageMenu()}`,
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'POPKID BIBLE 🔔',
+          newsletterJid: '120363290715861418@newsletter'
+        }
+      }
     }, { quoted: m });
   }
 
   if (!SUPPORTED_LANGUAGES[lang]) {
     return sock.sendMessage(m.from, {
-      text: `❌ *Unsupported language code:* \`${lang}\`\n\n${showLanguageMenu()}`
+      text: `❌ *Unsupported Language Code:* \`${lang}\`\n\n${showLanguageMenu()}`,
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'POPKID BIBLE 🔔',
+          newsletterJid: '120363290715861418@newsletter'
+        }
+      }
     }, { quoted: m });
   }
 
-  // Start response timer and send typing reaction
-  const startTime = Date.now();
-  await sock.sendMessage(m.from, { react: { text: '⏳', key: m.key } });
+  await sock.sendMessage(m.from, { react: { text: '📖', key: m.key } });
 
   try {
-    const apiUrl = `https://bible-api.com/${encodeURIComponent(verseQuery)}`;
-    const response = await fetch(apiUrl);
+    const startTime = Date.now();
+    const response = await fetch(`https://bible-api.com/${encodeURIComponent(verseQuery)}`);
     const data = await response.json();
     const responseTime = Date.now() - startTime;
 
     if (data.error) {
       return sock.sendMessage(m.from, {
-        text: `❌ *Error:* ${data.error}`
+        text: `❌ *Error:* ${data.error}`,
+        contextInfo: {
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterName: 'POPKID BIBLE ❌',
+            newsletterJid: '120363290715861418@newsletter'
+          }
+        }
       }, { quoted: m });
     }
 
@@ -88,20 +108,28 @@ const bible = async (m, sock) => {
       verseText = await getTranslatedText(verseText, lang);
     }
 
-    const formatted = `
-╭─⧉ *Bible Verse Lookup*
+    const stylishBox = `
+╭─❍「 📖 *Bible Verse Found* 」❍
 │
-│ 📚 *Reference:* ${reference}
-│ 🌐 *Language:* ${SUPPORTED_LANGUAGES[lang]}
-│ 🕊️ *Verse:* 
+│ 🔹 *Reference:* ${reference}
+│ 🌍 *Language:* ${SUPPORTED_LANGUAGES[lang]}
+│ 📜 *Verse:*
 │ ${verseText.split('\n').map(line => `│ ${line}`).join('\n')}
 │
-│ ⏱️ *Fetched in:* ${responseTime}ms
-╰────⟡ bible-api.com + libretranslate.de
+│ ⏱️ *Time Taken:* ${responseTime}ms
+╰───────────────⧘
     `.trim();
 
     await sock.sendMessage(m.from, {
-      text: formatted
+      text: stylishBox,
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'POPKID BIBLE 📖',
+          newsletterJid: '120363290715861418@newsletter'
+        }
+      }
     }, { quoted: m });
 
     await sock.sendMessage(m.from, { react: { text: '✅', key: m.key } });
@@ -109,8 +137,17 @@ const bible = async (m, sock) => {
   } catch (err) {
     console.error('[Bible Command Error]', err.message);
     await sock.sendMessage(m.from, {
-      text: '❌ *An error occurred while fetching or translating the verse.*'
+      text: '⚠️ *An error occurred while fetching or translating the verse.*',
+      contextInfo: {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'POPKID BIBLE ⚠️',
+          newsletterJid: '120363290715861418@newsletter'
+        }
+      }
     }, { quoted: m });
+
     await sock.sendMessage(m.from, { react: { text: '⚠️', key: m.key } });
   }
 };
