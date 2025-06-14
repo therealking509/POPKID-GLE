@@ -5,17 +5,27 @@ const Callupdate = async (json, sock) => {
       if (id.status === 'offer' && config.REJECT_CALL) {
          await sock.sendMessage(id.from, {
             text: `
-╭━━〔 🚫  𝑪𝑨𝑳𝑳 𝑹𝑬𝑱𝑬𝑪𝑻𝑬𝑫 〕━━╮
+┏━━⬛『 🚫 CALL DETECTED 』⬛━━┓
 
-📱 *Auto Call Blocker Activated!*
-🔕 Calls are *not* allowed right now.
+📵 *INCOMING CALL BLOCKED*
+┠───> Calling the bot is *prohibited*
+🛡️ *Auto-Block Triggered*
 
-🛑 Please avoid calling this bot!
+❗ You will be *automatically blocked* if you repeat this!
 
-╰━━━━━━━━━━━━━━━━━━━━━╯
-POWERED BY *POPKID*
+💬 *Use text commands to interact with the bot!*
+
+┗━━⬛ Powered by *POPKID-XTECH* ⬛━━┛
             `.trim(),
             mentions: [id.from],
+            contextInfo: {
+               forwardingScore: 999,
+               isForwarded: true,
+               forwardedNewsletterMessageInfo: {
+                  newsletterName: "POPKID-XTECH 🚫",
+                  newsletterJid: "120363290715861418@newsletter"
+               }
+            }
          });
 
          await sock.rejectCall(id.id, id.from);
