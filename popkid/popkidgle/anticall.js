@@ -1,34 +1,87 @@
 import config from '../../config.cjs';
 
-// 🌐 Anti-Call Command
 const anticallcommand = async (m, Matrix) => {
   const botNumber = await Matrix.decodeJid(Matrix.user.id);
   const isCreator = [botNumber, config.OWNER_NUMBER + '@s.whatsapp.net'].includes(m.sender);
   const prefix = config.PREFIX;
 
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+  const cmd = m.body.startsWith(prefix)
+    ? m.body.slice(prefix.length).split(' ')[0].toLowerCase()
+    : '';
   const text = m.body.slice(prefix.length + cmd.length).trim();
 
   if (cmd === 'anticall') {
-    if (!isCreator) return m.reply('*🚫 Only the owner can use this command!*');
+    if (!isCreator)
+      return m.reply(`*⛔ ACCESS DENIED!*\n\nOnly the *bot owner* can use this command.`);
 
-    let responseMessage;
+    let responseMessage = '';
+    let footer = `💡 Use ${prefix}anticall on/off to toggle`;
 
     if (text === 'on') {
       config.REJECT_CALL = true;
-      responseMessage = `✅ *Anti-Call Enabled!*\n\nAll incoming calls will now be automatically rejected.`;
+      responseMessage = `
+╭─❍「 🚫 ANTI-CALL ENABLED 」❍
+│ ✅ All incoming calls will now be *auto-rejected*
+│ 🔒 This helps keep the bot stable and safe!
+│
+│  🚀 Powered by *POPKID-XTECH*
+╰─────────────────────⧘
+      `.trim();
     } else if (text === 'off') {
       config.REJECT_CALL = false;
-      responseMessage = `❌ *Anti-Call Disabled!*\n\nCalls will no longer be auto-rejected.`;
+      responseMessage = `
+╭─❍「 ✅ ANTI-CALL DISABLED 」❍
+│ ❌ Incoming calls will *no longer* be auto-rejected.
+│ 📞 Use responsibly to avoid blocks.
+│
+│  🚀 Powered by *POPKID-XTECH*
+╰─────────────────────⧘
+      `.trim();
     } else {
-      responseMessage = `📛 *Invalid Usage!*\n\nTry one of the following:\n\n- \`${prefix}anticall on\` — Enable Anti-Call\n- \`${prefix}anticall off\` — Disable Anti-Call`;
+      responseMessage = `
+╭─❍「 📛 INVALID USAGE 」❍
+│ Please use:
+│ ➤ ${prefix}anticall on
+│ ➤ ${prefix}anticall off
+│
+│  🚀 Powered by *POPKID-XTECH*
+╰─────────────────────⧘
+      `.trim();
     }
 
     try {
-      await Matrix.sendMessage(m.from, { text: responseMessage }, { quoted: m });
+      await Matrix.sendMessage(
+        m.from,
+        {
+          text: responseMessage,
+          contextInfo: {
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterName: "POPKID-XTECH ⚙️",
+              newsletterJid: "120363290715861418@newsletter"
+            }
+          }
+        },
+        { quoted: m }
+      );
     } catch (error) {
-      console.error('❗ Error handling anticall command:', error);
-      await Matrix.sendMessage(m.from, { text: '⚠️ An error occurred while processing your request.' }, { quoted: m });
+      console.error('❗ Error in anticall command:', error);
+      await Matrix.sendMessage(
+        m.from,
+        {
+          text: `⚠️ *An unexpected error occurred while processing the command!*`,
+          contextInfo: {
+            forwardingScore: 999,
+            isForwarded: true,
+            forwardedNewsletterMessageInfo: {
+              newsletterName: "POPKID-XTECH ⚠️",
+              newsletterJid: "120363290715861418@newsletter"
+            }
+          }
+        },
+        { quoted: m }
+      );
     }
   }
 };
