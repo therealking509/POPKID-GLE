@@ -38,26 +38,31 @@ const imageCommand = async (m, sock) => {
     query = m.quoted.text;
   }
 
-  try {
-    await sock.sendMessage(m.from, {
-      text: `🔍 *Searching for:* _${query}_\n\n🕒 Please wait while I fetch images...`,
-      contextInfo: {
-        forwardingScore: 999,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: "120363290715861418@newsletter",
-          newsletterName: "Popkid-Xmd"
-        }
+  await sock.sendMessage(m.from, {
+    text: `🔍 *Searching for:* _${query}_\n\n🕒 Please wait while I fetch images...`,
+    contextInfo: {
+      forwardingScore: 999,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: "120363290715861418@newsletter",
+        newsletterName: "Popkid-Xmd"
       }
-    });
+    }
+  });
 
+  try {
     const endpoint = `${global.nex_key}/search/google-image?apikey=${global.nex_api}&q=${encodeURIComponent(query)}`;
     const response = await axios.get(endpoint);
 
-    if (response.status === 200 && response.data.result && response.data.result.length > 0) {
-      const images = response.data.result.slice(0, 5);
+    if (response.status !== 200 || !response.data.result || response.data.result.length === 0) {
+      throw new Error('No images found');
+    }
 
-      for (let i = 0; i < images.length; i++) {
+    const images = response.data.result.slice(0, 5);
+    let successCount = 0;
+
+    for (let i = 0; i < images.length; i++) {
+      try {
         await sleep(500);
         await sock.sendMessage(
           m.from,
@@ -75,12 +80,19 @@ const imageCommand = async (m, sock) => {
           },
           { quoted: m }
         );
+        successCount++;
+      } catch (imgErr) {
+        console.warn(`Failed to send image ${i + 1}:`, imgErr.message);
+        // Skip that image but don’t crash the entire loop
       }
+    }
 
+    if (successCount > 0) {
       await m.react("✅");
     } else {
-      throw new Error('No images found');
+      throw new Error('All image fetch attempts failed');
     }
+
   } catch (error) {
     console.error("Image Fetch Error:", error);
     await sock.sendMessage(m.from, {
