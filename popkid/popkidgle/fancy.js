@@ -1,87 +1,18 @@
-// file: commands/fancy.js
-
 import config from '../../config.cjs';
 
-const fonts = [
-  { name: "Bold", map: '𝐚𝐛𝐜𝐝𝐞𝐟𝐠𝐡𝐢𝐣𝐤𝐥𝐦𝐧𝐨𝐩𝐪𝐫𝐬𝐭𝐮𝐯𝐰𝐱𝐲𝐳', offset: 0x1D400 },
-  { name: "Italic", map: '𝑎𝑏𝑐𝑑𝑒𝑓𝑔ℎ𝑖𝑗𝑘𝑙𝑚𝑛𝑜𝑝𝑞𝑟𝑠𝑡𝑢𝑣𝑤𝑥𝑦𝑧', offset: 0x1D434 },
-  { name: "Bold Italic", map: '𝒂𝒃𝒄𝒅𝒆𝒇𝒈𝒉𝒊𝒋𝒌𝒍𝒎𝒏𝒐𝒑𝒒𝒓𝒔𝒕𝒖𝒗𝒘𝒙𝒚𝒛', offset: 0x1D468 },
-  { name: "Script", map: '𝓪𝓫𝓬𝓭𝓮𝓯𝓰𝓱𝓲𝓳𝓴𝓵𝓶𝓷𝓸𝓹𝓺𝓻𝓼𝓽𝓾𝓿𝔀𝔁𝔂𝔃', offset: 0x1D4B6 },
-  { name: "Bold Script", map: '𝓐𝓑𝓒𝓓...', offset: 0x1D4D0 },
-  { name: "Fraktur", map: '𝔞𝔟𝔠𝔡𝔢...', offset: 0x1D504 },
-  { name: "Bold Fraktur", map: '𝖆𝖇𝖈𝖉...', offset: 0x1D56C },
-  { name: "Sans", map: '𝗮𝗯𝗰𝗱...', offset: 0x1D5A0 },
-  { name: "Sans Italic", map: '𝘢𝘣𝘤𝘥...', offset: 0x1D608 },
-  { name: "Sans Bold Italic", map: '𝙖𝙗𝙘𝙙...', offset: 0x1D63C },
-  { name: "Monospace", map: '𝚊𝚋𝚌𝚍...', offset: 0x1D670 },
-  { name: "Bubble", map: 'ⓐⓑⓒⓓ...', symbols: true },
-  { name: "Square", map: '🄰🄱🄲🄳...', symbols: true },
-  { name: "Tiny", map: 'ᵃᵇᶜᵈ...', symbols: true },
-  { name: "Upside Down", fn: (t) => t.split('').reverse().map(c => upsideDownMap[c] || c).join('') },
-  { name: "Wide", fn: (t) => t.split('').map(c => c === ' ' ? ' ' : String.fromCharCode(0xFF21 + c.charCodeAt(0) - 65)).join('') },
-  { name: "Strike", fn: (t) => t.split('').map(c => c + '̶').join('') },
-  { name: "Underline", fn: (t) => t.split('').map(c => c + '̲').join('') },
-  { name: "Space Letter", fn: (t) => t.split('').join(' ') },
-  { name: "Slash", fn: (t) => t.split('').join('/') },
-  { name: "Circled", fn: (t) => t.split('').map(c => circled[c] || c).join('') },
-  { name: "Tiny Caps", fn: (t) => t.toLowerCase().split('').map(c => tinyCaps[c] || c).join('') },
-];
+const fonts = [ (text) => text, // normal (text) => [...text].map(c => String.fromCodePoint(0x1D400 + c.charCodeAt(0) - 65)).join(''), // bold (text) => [...text].map(c => String.fromCodePoint(0x1D434 + c.charCodeAt(0) - 65)).join(''), // italic (text) => [...text].map(c => String.fromCodePoint(0x1D468 + c.charCodeAt(0) - 65)).join(''), // bold italic (text) => [...text].map(c => String.fromCodePoint(0x1D670 + c.charCodeAt(0) - 65)).join(''), // monospace (text) => text.split('').map(c => fancyMap1[c] || c).join(''), // circle (text) => text.split('').map(c => fancyMap2[c] || c).join(''), // square (text) => text.split('').map(c => fancyMap3[c] || c).join(''), // bubble // Add more stylized maps here if desired ];
 
-const fancyCommand = async (m, sock) => {
-  const prefix = config.PREFIX;
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(" ")[0].toLowerCase() : "";
-  const args = m.body.slice(prefix.length + cmd.length).trim();
+const fancyMap1 = { A: 'Ⓐ', B: 'Ⓑ', C: 'Ⓒ', D: 'Ⓓ', E: 'Ⓔ', F: 'Ⓕ', G: 'Ⓖ', H: 'Ⓗ', I: 'Ⓘ', J: 'Ⓙ', K: 'Ⓚ', L: 'Ⓛ', M: 'Ⓜ', N: 'Ⓝ', O: 'Ⓞ', P: 'Ⓟ', Q: 'Ⓠ', R: 'Ⓡ', S: 'Ⓢ', T: 'Ⓣ', U: 'Ⓤ', V: 'Ⓥ', W: 'Ⓦ', X: 'Ⓧ', Y: 'Ⓨ', Z: 'Ⓩ', a: 'ⓐ', b: 'ⓑ', c: 'ⓒ', d: 'ⓓ', e: 'ⓔ', f: 'ⓕ', g: 'ⓖ', h: 'ⓗ', i: 'ⓘ', j: 'ⓙ', k: 'ⓚ', l: 'ⓛ', m: 'ⓜ', n: 'ⓝ', o: 'ⓞ', p: 'ⓟ', q: 'ⓠ', r: 'ⓡ', s: 'ⓢ', t: 'ⓣ', u: 'ⓤ', v: 'ⓥ', w: 'ⓦ', x: 'ⓧ', y: 'ⓨ', z: 'ⓩ' };
 
-  if (cmd !== 'fancy') return;
+const fancyMap2 = Object.fromEntries('abcdefghijklmnopqrstuvwxyz'.split('').map((l, i) => [l, String.fromCharCode(0x1F130 + i)])); const fancyMap3 = Object.fromEntries('abcdefghijklmnopqrstuvwxyz'.split('').map((l, i) => [l, String.fromCharCode(0x1F170 + i)]));
 
-  if (!args) {
-    return m.reply(`❌ Please provide a name or word.\n\n*Example:* \`${prefix}fancy Popkid\``);
-  }
+const fancyCmd = async (m, sock) => { const prefix = config.PREFIX; const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : ''; const text = m.body.slice(prefix.length + cmd.length).trim();
 
-  let result = `╭──「 *Fancy Fonts* 」\n│\n`;
+if (cmd !== 'fancy' || !text) return;
 
-  for (const style of fonts) {
-    try {
-      let styled = "";
+let result = *Stylish Fonts for:* _${text}_\n\n; let count = 1; for (const transform of fonts) { try { const styled = transform(text.toUpperCase()); result += *${count++}.* ${styled}\n; } catch (e) { result += *${count++}.* ⚠️ Not supported on this device\n; } }
 
-      if (style.fn) {
-        styled = style.fn(args);
-      } else if (style.symbols) {
-        styled = args.split('').map(c => symbolsMap[c] || c).join('');
-      } else {
-        styled = args
-          .toLowerCase()
-          .split('')
-          .map(c => {
-            const index = c.charCodeAt(0) - 97;
-            return /[a-z]/.test(c) ? style.map[index] : c;
-          }).join('');
-      }
+await sock.sendMessage(m.from, { text: result.trim(), contextInfo: { forwardingScore: 5, isForwarded: true, } }, { quoted: m }); };
 
-      result += `│ 🌟 *${style.name}*: ${styled}\n`;
-    } catch (e) {
-      // Skip any style that breaks
-    }
-  }
+export default fancyCmd;
 
-  result += `│\n╰───────────────`;
-
-  await sock.sendMessage(m.from, {
-    text: result,
-    contextInfo: {
-      forwardingScore: 999,
-      isForwarded: true,
-      externalAdReply: {
-        title: 'POPKID-XTECH Font Generator',
-        body: 'Over 30+ fancy styles!',
-        mediaType: 1,
-        renderLargerThumbnail: true,
-        thumbnailUrl: 'https://i.imgur.com/AZklwZL.png',
-        mediaUrl: 'https://github.com/poPKiDXmd',
-        sourceUrl: 'https://github.com/poPKiDXmd',
-      }
-    }
-  });
-};
-
-export default fancyCommand;
