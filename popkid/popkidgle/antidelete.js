@@ -10,17 +10,17 @@ const demonContext = {
   isForwarded: true,
   forwardedNewsletterMessageInfo: {
     newsletterJid: '120363290715861418@newsletter',
-    newsletterName: 'popkid recoveries',
+    newsletterName: '🕶️ popkid recoveries',
     serverMessageId: 143
   }
 };
 
-// 📦 AntiDelete Class
+// 🧠 AntiDelete Class — Handles Deleted Message Recovery
 class DemonAntiDelete {
   constructor() {
     this.enabled = false;
     this.messageCache = new Map();
-    this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
+    this.cacheExpiry = 5 * 60 * 1000;
     this.cleanupInterval = setInterval(() => this.cleanExpiredMessages(), this.cacheExpiry);
   }
 
@@ -49,8 +49,6 @@ class DemonAntiDelete {
 
 const demonDelete = new DemonAntiDelete();
 const statusPath = './demon_antidelete.json';
-
-// 📂 Load and Setup Status
 let statusData = fs.existsSync(statusPath)
   ? JSON.parse(fs.readFileSync(statusPath))
   : { chats: {} };
@@ -58,27 +56,27 @@ let statusData = fs.existsSync(statusPath)
 if (!statusData.chats) statusData.chats = {};
 if (antiDeleteGlobal) demonDelete.enabled = true;
 
-// ⚔️ AntiDelete Main Handler
+// 🔥 AntiDelete Main Handler
 const AntiDelete = async (m, Matrix) => {
   const chatId = m.from;
+  const command = m.body.toLowerCase();
 
   const formatJid = (jid) => jid?.replace(/@s\.whatsapp\.net|@g\.us/g, '') || 'Unknown';
 
   const getChatInfo = async (jid) => {
-    if (!jid) return { name: 'Unknown Chat', isGroup: false };
+    if (!jid) return { name: '📤 Unknown Chat', isGroup: false };
     if (jid.includes('@g.us')) {
       try {
         const meta = await Matrix.groupMetadata(jid);
-        return { name: meta?.subject || 'popkid xmd', isGroup: true };
+        return { name: meta?.subject || '💀 popkid xmd', isGroup: true };
       } catch {
-        return { name: 'popkid xmd', isGroup: true };
+        return { name: '💀 popkid xmd', isGroup: true };
       }
     }
-    return { name: 'Private Mission', isGroup: false };
+    return { name: '🕵️ Private Mission', isGroup: false };
   };
 
-  // 🔘 Handle AntiDelete On/Off Command
-  const command = m.body.toLowerCase();
+  // 🔘 ON/OFF Toggle
   if ([`${prefix}antidelete on`, `${prefix}antidelete off`].includes(command)) {
     const isOn = command.endsWith('on');
     statusData.chats[chatId] = isOn;
@@ -88,11 +86,11 @@ const AntiDelete = async (m, Matrix) => {
 
     const response = isOn
       ? {
-          text: `🛡️ *popkid Xmd Anti-Delete Activated!*\n\n• Status: ✅ Enabled\n• Cache: 🕒 5 minutes\n• Mode: 🌐 Global\n\n_Deleted messages will now rise from the shadows_\n\n━━━━━━⊱✿⊰━━━━━━\nᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘᴏᴘᴋɪᴅ xᴍᴅ`,
+          text: `🛡️ *AntiDelete Activated!*\n\n💢 Status: ✅ ON\n⏳ Cache: 5 min\n🧠 Mode: Global\n\n🎯 Deleted messages will now be resurrected.\n\n━━⊱⚔️⊰━━\n💻 Powered by *POPKID XMD*`,
           contextInfo: demonContext
         }
       : {
-          text: `⛔ *popkid Xmd Anti-Delete Deactivated!*\n\n• Status: ❌ Disabled\n\n_Message recovery disabled_\n\n━━━━━━⊱✿⊰━━━━━━\nᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘᴏᴘᴋɪᴅ`,
+          text: `⛔ *AntiDelete Deactivated!*\n\n💢 Status: ❌ OFF\n\n⚠️ Deleted messages will no longer be recovered.\n\n━━⊱⚔️⊰━━\n💻 Powered by *POPKID XMD*`,
           contextInfo: demonContext
         };
 
@@ -101,7 +99,7 @@ const AntiDelete = async (m, Matrix) => {
     return;
   }
 
-  // 💾 Store Incoming Messages
+  // 💾 Cache Incoming Messages
   Matrix.ev.on('messages.upsert', async ({ messages }) => {
     if (!antiDeleteGlobal && !demonDelete.enabled) return;
     if (!messages?.length) return;
@@ -118,11 +116,10 @@ const AntiDelete = async (m, Matrix) => {
           msg.message.documentMessage?.caption;
 
         let media = null,
-          type = null,
-          mimetype = null;
+            type = null,
+            mimetype = null;
 
         const mediaTypes = ['image', 'video', 'audio', 'sticker', 'document'];
-
         for (const mediaType of mediaTypes) {
           const mediaMsg = msg.message[`${mediaType}Message`];
           if (mediaMsg) {
@@ -137,7 +134,7 @@ const AntiDelete = async (m, Matrix) => {
           }
         }
 
-        // Handle voice/ptt
+        // Voice/PTT
         if (msg.message.audioMessage?.ptt) {
           try {
             const stream = await downloadContentFromMessage(msg.message.audioMessage, 'audio');
@@ -164,7 +161,7 @@ const AntiDelete = async (m, Matrix) => {
     }
   });
 
-  // 🧼 Handle Message Deletes
+  // 🧼 Handle Deletion
   Matrix.ev.on('messages.update', async (updates) => {
     if (!antiDeleteGlobal && !demonDelete.enabled) return;
     if (!updates?.length) return;
@@ -186,28 +183,27 @@ const AntiDelete = async (m, Matrix) => {
           ? `@${formatJid(data.participant)}`
           : key.participant
           ? `@${formatJid(key.participant)}`
-          : 'Unknown Demon';
+          : '🕶️ Unknown';
 
         const messageType = cached.type ? capitalize(cached.type) : 'Message';
 
-        const baseInfo = `⚔️ *Recovered Deleted ${messageType}*\n\n` +
+        const info = `⚠️ *Deleted ${messageType} Resurrected!*\n\n` +
           `👤 *Sender:* ${cached.senderFormatted}\n` +
-          `🗡️ *Deleted By:* ${deletedBy}\n` +
-          `🏰 *Location:* ${chatInfo.name}${chatInfo.isGroup ? ' (Group)' : ''}\n` +
-          `⏰ *Sent At:* ${demonDelete.formatTime(cached.timestamp)}\n` +
-          `🕰️ *Deleted At:* ${demonDelete.formatTime(Date.now())}\n\n` +
-          `━━━━━━━━━━━━━━━\nᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘᴏᴘᴋɪᴅ`;
+          `🗑️ *Deleted By:* ${deletedBy}\n` +
+          `🧠 *Location:* ${chatInfo.name}${chatInfo.isGroup ? ' (Group)' : ''}\n` +
+          `🕒 *Sent:* ${demonDelete.formatTime(cached.timestamp)}\n` +
+          `🕓 *Deleted:* ${demonDelete.formatTime(Date.now())}\n\n━━⊱⚔️⊰━━\n💻 *POPKID XMD*`;
 
         if (cached.media) {
           await Matrix.sendMessage(cached.chatJid, {
             [cached.type]: cached.media,
             mimetype: cached.mimetype,
-            caption: baseInfo,
+            caption: info,
             contextInfo: demonContext
           });
         } else if (cached.content) {
           await Matrix.sendMessage(cached.chatJid, {
-            text: `${baseInfo}\n\n📜 *Recovered Content:* \n${cached.content}`,
+            text: `${info}\n\n📄 *Content:* ${cached.content}`,
             contextInfo: demonContext
           });
         }
@@ -216,7 +212,7 @@ const AntiDelete = async (m, Matrix) => {
   });
 };
 
-// 🔧 Helpers
+// 🧰 Helpers
 const streamToBuffer = async (stream) => {
   const buffers = [];
   for await (const chunk of stream) buffers.push(chunk);
