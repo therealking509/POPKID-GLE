@@ -19,7 +19,7 @@ const ownerContact = async (m, sock) => {
     const newsletterName = 'Popkid-Xmd';
 
     // 🔥 Your custom image URL
-    const profilePictureUrl = 'https://your-image-link.com/image.jpg'; // replace this with your real image link
+    const profilePictureUrl = 'https://files.catbox.moe/0kca70.jpg'; // replace this with your real image link
 
     const captionText = `
 ╭───〔 👑 *BOT OWNER* 〕───⬣
