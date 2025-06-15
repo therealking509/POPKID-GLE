@@ -183,6 +183,9 @@ async function init() {
     }
   }
 }
+import statusAutoReply from './lib/statusReply.js';
+
+await statusAutoReply(Matrix);
 init();
 app.use(_0x18d022["static"](_0x2d44e9.join(__dirname, "mydata")));
 app.get('/', (_0x325223, _0x3dc2be) => {
