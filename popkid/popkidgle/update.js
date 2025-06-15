@@ -27,7 +27,7 @@ const update = async (m, sock) => {
 
     await m.React('🔍');
     const sent = await sock.sendMessage(m.from, {
-        image: { url: 'https://i.imgur.com/H2b9OQo.png' }, // Customize thumbnail
+        image: { url: 'https://files.catbox.moe/x0ohbm.jpg' }, // Customize thumbnail
         caption: `🔄 *Checking for updates...*\nPlease wait...`,
         contextInfo: {
             forwardingScore: 5,
@@ -42,7 +42,7 @@ const update = async (m, sock) => {
     const editMessage = async (newCaption) => {
         try {
             await sock.sendMessage(m.from, {
-                image: { url: 'https://i.imgur.com/H2b9OQo.png' },
+                image: { url: 'https://files.catbox.moe/x0ohbm.jpg' },
                 caption: newCaption,
                 contextInfo: {
                     forwardingScore: 5,
