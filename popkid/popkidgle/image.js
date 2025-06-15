@@ -83,18 +83,24 @@ const imageCommand = async (m, sock) => {
         successCount++;
       } catch (imgErr) {
         console.warn(`Failed to send image ${i + 1}:`, imgErr.message);
-        // Skip that image but don’t crash the entire loop
+        // Skip to next image
       }
     }
 
     if (successCount > 0) {
-      await m.react("✅");
+      await sock.sendMessage(m.key.remoteJid, {
+        react: {
+          text: '✅',
+          key: m.key
+        }
+      });
     } else {
       throw new Error('All image fetch attempts failed');
     }
 
   } catch (error) {
     console.error("Image Fetch Error:", error);
+
     await sock.sendMessage(m.from, {
       text:
         `╭───〔 *❌ SEARCH FAILED* 〕───╮\n` +
