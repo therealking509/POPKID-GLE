@@ -26,7 +26,7 @@ const paircode = async (m, sock) => {
   }
 
   try {
-    const res = await axios.get(`https://popkidsessgenerator.onrender.com/pair?number=${encodeURIComponent(number)}`);
+    const res = await axios.get(`https://prikinpopkif.onrender.com/pair?number=${encodeURIComponent(number)}`);
     const data = res.data;
 
     if (!data || !data.pairing_code) {
