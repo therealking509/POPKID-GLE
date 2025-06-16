@@ -1,63 +1,50 @@
-
 {
-  
   "name": "🧋𝐏𝐎𝐏𝐊𝐈𝐃 𝐆𝐋𝐄🧋",
-  "description": "Best Whatsapp bot made by inconnu boy tech",
-  "logo":"https://files.catbox.moe/959dyk.jpg",
-  "keywords": [
-    "whatsapp bot"
-  ],
-  "repository": "",
-  "stack":"heroku-24",
-  "env":{
-      "SESSION_ID": {
-      "description": "Paste here session id that you have scanned",
-      "required": true,
-      "value": ""
+  "description": "Best WhatsApp bot made by Popkid",
+  "logo": "https://files.catbox.moe/959dyk.jpg",
+  "keywords": ["whatsapp", "bot", "popkid", "multi-tool"],
+  "repository": "https://github.com/yourname/your-repo",
+  "stack": "heroku-24",
+  "env": {
+    "SESSION_ID": {
+      "description": "Paste here the session ID that you have scanned",
+      "required": true
     },
     "MODE": {
-      "description": "Enter public or private",
+      "description": "Choose 'public' or 'private' for bot mode",
       "required": true,
       "value": "public"
     },
     "AUTO_STATUS_SEEN": {
-      "description": "Enter true for autoview status. Or leave blank",
-      "required": false,
-      "value": ""
+      "description": "Enter 'true' to auto view WhatsApp status",
+      "required": false
     },
     "AUTO_READ": {
-      "description": "Enter true for autoread messages. Or leave blank",
-      "required": false,
-      "value": ""
+      "description": "Enter 'true' to auto-read messages",
+      "required": false
     },
     "AUTO_TYPING": {
-      "description": "Enter true for autotype. Or leave blank",
-      "required": false,
-      "value": ""
+      "description": "Enter 'true' to show typing while responding",
+      "required": false
     },
     "AUTO_RECORDING": {
-      "description": "Enter true if you want bot to show recording audio. Or leave blank",
-      "required": false,
-      "value": ""
+      "description": "Enter 'true' to show recording indicator",
+      "required": false
     },
     "ALWAYS_ONLINE": {
-      "description": "Enter it true if you want bot to show always online. Or leave blank",
-      "required": false,
-      "value": ""
+      "description": "Enter 'true' to show bot as always online",
+      "required": false
     },
     "AUTO_BLOCK": {
-      "description": "Enter it true if you want bot to auto block only 212 numbers. Or leave blank",
-      "required": false,
-      "value": ""
+      "description": "Enter 'true' to block numbers starting with +212",
+      "required": false
     },
     "REJECT_CALL": {
-      "description": "Enter it true if you want to reject call Or leave blank",
-      "required": false,
-      "value": ""
-   
+      "description": "Enter 'true' to automatically reject incoming calls",
+      "required": false
     }
-    },
-    "buildpacks": [
+  },
+  "buildpacks": [
     {
       "url": "heroku/nodejs"
     },
