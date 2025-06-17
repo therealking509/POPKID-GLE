@@ -1,70 +1,42 @@
+// 📁 popkidgle/antilink.js
 import fs from 'fs';
 import path from 'path';
 import config from '../../config.cjs';
 
-const dataFile = path.join('./data', 'antilink.json');
-if (!fs.existsSync(dataFile)) fs.writeFileSync(dataFile, '{}');
-let antilink = JSON.parse(fs.readFileSync(dataFile));
+const antilinkFile = path.join('./data/antilink.json');
+if (!fs.existsSync(antilinkFile)) fs.writeFileSync(antilinkFile, '{}');
 
-function saveAntilink() {
-  fs.writeFileSync(dataFile, JSON.stringify(antilink, null, 2));
-}
+const antilinkData = JSON.parse(fs.readFileSync(antilinkFile));
+
+const saveAntilinkData = () => {
+  fs.writeFileSync(antilinkFile, JSON.stringify(antilinkData, null, 2));
+};
+
+const groupLinkPattern = /chat\.whatsapp\.com\/[A-Za-z0-9]{22}/;
 
 const antilinkHandler = async (m, sock) => {
+  const isGroup = m.key.remoteJid.endsWith('@g.us');
+  const sender = m.key.participant || m.key.remoteJid;
   const prefix = config.PREFIX;
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
-  const args = m.body.slice(prefix.length + cmd.length).trim().split(/\s+/);
-  const text = args[0];
-  const groupId = m.key.remoteJid;
+  const cmd = m.body.startsWith(prefix)
+    ? m.body.slice(prefix.length).split(' ')[0].toLowerCase()
+    : '';
+  const args = m.body.slice(prefix.length + cmd.length).trim().split(' ');
+  const text = args.join(' ');
 
-  if (!m.isGroup) return;
-
-  // 💬 .antilink [mode]
   if (cmd === 'antilink') {
-    const mode = text?.toLowerCase();
+    if (!isGroup) return await sock.sendMessage(m.from, { text: '❌ This command is only for groups.' }, { quoted: m });
 
-    if (['off', 'delete', 'warn', 'kick'].includes(mode)) {
-      antilink[groupId] = mode;
-      saveAntilink();
+    const groupId = m.from;
 
-      await sock.sendMessage(m.from, {
+    if (args[0] === 'on') {
+      antilinkData[groupId] = { enabled: true, mode: 'delete' };
+      saveAntilinkData();
+      return await sock.sendMessage(m.from, {
         image: { url: 'https://files.catbox.moe/959dyk.jpg' },
-        caption: `✅ *Antilink mode updated!*\n\n🛡️ Group: *${m.pushName || 'Group'}*\n🔧 Mode: *${mode.toUpperCase()}*`,
+        caption: '✅ *Antilink Enabled*\nLinks will be blocked by *deleting them*. Use `.antilink mode` to change behavior.',
         contextInfo: {
-          forwardingScore: 999,
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterName: 'Popkid-Xmd',
-            newsletterJid: '120363290715861418@newsletter',
-          },
-        },
-      }, { quoted: m });
-
-    } else if (mode === 'status') {
-      const current = antilink[groupId] || 'OFF';
-      await sock.sendMessage(m.from, {
-        image: { url: 'https://files.catbox.moe/959dyk.jpg' },
-        caption: `🛡️ *Antilink Status*\n\n📍 Group: *${m.pushName || 'Group'}*\n📶 Current Mode: *${current.toUpperCase()}*`,
-        contextInfo: {
-          forwardingScore: 999,
-          isForwarded: true,
-          forwardedNewsletterMessageInfo: {
-            newsletterName: 'Popkid-Xmd',
-            newsletterJid: '120363290715861418@newsletter',
-          },
-        },
-      }, { quoted: m });
-    } else {
-      await sock.sendMessage(m.from, {
-        text: `✳️ *Antilink Control*\n\nUse:\n`.concat(
-          `• .antilink delete\n`,
-          `• .antilink warn\n`,
-          `• .antilink kick\n`,
-          `• .antilink off\n`,
-          `• .antilink status`
-        ),
-        contextInfo: {
-          forwardingScore: 100,
+          forwardingScore: 10,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
             newsletterName: 'Popkid-Xmd',
@@ -73,52 +45,81 @@ const antilinkHandler = async (m, sock) => {
         }
       }, { quoted: m });
     }
-    return;
+
+    if (args[0] === 'off') {
+      delete antilinkData[groupId];
+      saveAntilinkData();
+      return await sock.sendMessage(m.from, {
+        image: { url: 'https://files.catbox.moe/959dyk.jpg' },
+        caption: '❌ *Antilink Disabled*\nGroup is now open to links.',
+        contextInfo: {
+          forwardingScore: 10,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterName: 'Popkid-Xmd',
+            newsletterJid: '120363290715861418@newsletter',
+          },
+        }
+      }, { quoted: m });
+    }
+
+    if (args[0] === 'mode' && ['delete', 'kick', 'warn'].includes(args[1])) {
+      if (!antilinkData[groupId]) return await sock.sendMessage(m.from, { text: '❗ Antilink is not active. Use `.antilink on` first.' }, { quoted: m });
+      antilinkData[groupId].mode = args[1];
+      saveAntilinkData();
+      return await sock.sendMessage(m.from, {
+        text: `✅ *Antilink mode set to* _${args[1]}_.`,
+        contextInfo: {
+          forwardingScore: 5,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterName: 'Popkid-Xmd',
+            newsletterJid: '120363290715861418@newsletter',
+          },
+        }
+      }, { quoted: m });
+    }
+
+    return await sock.sendMessage(m.from, {
+      text: `⚙️ *Antilink Usage*\n\n• .antilink on/off\n• .antilink mode [kick|warn|delete]`,
+      contextInfo: {
+        forwardingScore: 3,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'Popkid-Xmd',
+          newsletterJid: '120363290715861418@newsletter',
+        },
+      }
+    }, { quoted: m });
   }
 
-  // 🚨 Auto-Antilink detection
-  if (antilink[groupId] && ['delete', 'warn', 'kick'].includes(antilink[groupId])) {
-    const groupInviteRegex = /chat\.whatsapp\.com\/[A-Za-z0-9]{20,24}/;
-    const isLink = groupInviteRegex.test(m.body);
-
-    if (isLink && !m.key.fromMe) {
-      const metadata = await sock.groupMetadata(groupId);
-      const groupAdmins = metadata.participants.filter(p => p.admin).map(p => p.id);
-      const isAdmin = groupAdmins.includes(m.key.participant);
-
-      if (isAdmin) return; // don't take action on admins
-
-      const mode = antilink[groupId];
-      if (mode === 'delete') {
-        await sock.sendMessage(m.from, {
-          delete: m.key
-        });
-      } else if (mode === 'warn') {
-        await sock.sendMessage(m.from, {
-          text: `🚨 *Link Detected!* ${m.pushName}, please avoid posting group links.`,
-          contextInfo: {
-            forwardingScore: 100,
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterName: 'Popkid-Xmd',
-              newsletterJid: '120363290715861418@newsletter',
-            },
-          }
-        }, { quoted: m });
-      } else if (mode === 'kick') {
-        await sock.groupParticipantsUpdate(m.from, [m.key.participant], 'remove');
-        await sock.sendMessage(m.from, {
-          text: `👢 Removed ${m.pushName} for posting a link.`,
-          contextInfo: {
-            forwardingScore: 100,
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-              newsletterName: 'Popkid-Xmd',
-              newsletterJid: '120363290715861418@newsletter',
-            },
-          }
-        });
+  // Auto-antispam if link detected
+  if (isGroup && m.body && groupLinkPattern.test(m.body)) {
+    const groupId = m.from;
+    const groupSetting = antilinkData[groupId];
+    if (groupSetting?.enabled) {
+      let actionText = '';
+      if (groupSetting.mode === 'kick') {
+        await sock.groupParticipantsUpdate(groupId, [sender], 'remove');
+        actionText = '🚫 User removed for sharing a group link!';
+      } else if (groupSetting.mode === 'warn') {
+        actionText = '⚠️ This is a warning! Group links are not allowed.';
+      } else {
+        await sock.sendMessage(groupId, { delete: m.key });
+        actionText = '🗑️ Message deleted: No group links allowed.';
       }
+
+      await sock.sendMessage(groupId, {
+        text: actionText,
+        contextInfo: {
+          forwardingScore: 2,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterName: 'Popkid-Xmd',
+            newsletterJid: '120363290715861418@newsletter',
+          },
+        }
+      });
     }
   }
 };
