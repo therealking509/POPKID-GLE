@@ -13,7 +13,7 @@ const antilinkMenu = `
 ┃ Type "off" to disable antilink
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛`;
 
-const newsletterImage = 'https://i.ibb.co/Fgx9kJZ/popkid-banner.jpg'; // Valid image URL
+const newsletterImage = 'https://files.catbox.moe/d1f4ab.jpg'; // Valid image URL
 
 const respond = async (sock, jid, text, quoted, mentions = []) => {
   return sock.sendMessage(
