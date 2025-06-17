@@ -7,7 +7,7 @@ const menu = async (m, sock) => {
 
   if (cmd === "menu") {
     const start = Date.now();
-    await m.React('📱');
+    await m.React('🤖');
     const responseTime = (Date.now() - start) / 1000;
 
     let profilePictureUrl = 'https://files.catbox.moe/kiy0hl.jpg';
@@ -17,66 +17,67 @@ const menu = async (m, sock) => {
     } catch {}
 
     const menuText = `
-╭━━━〔 *🤖 ${config.BOT_NAME} - Main Menu* 〕━━━◉
-│✨ *Bot Speed:* ${responseTime.toFixed(2)}s
-│🚀 *Version:* 7.1.0
-│👑 *Owner:* ${config.OWNER_NAME}
-╰━━━━━━━━━━━━━━━━━━━━━━━◉
+╭━━━━━━〔 💠 *${config.BOT_NAME} SYSTEM MENU* 💠 〕━━━━━━╮
+┃
+┃ 👤 User: @${m.sender.split('@')[0]}
+┃ 👑 Owner: ${config.OWNER_NAME}
+┃ ⚙️ Speed: ${responseTime.toFixed(2)}s
+┃ 📦 Version: 7.1.0
+┃
+╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯
 
-╭──〔 🛠️ *System Menu* 〕──◆
-│⎘ ${prefix}menu
-│✅ ${prefix}alive
-│🧑‍💻 ${prefix}owner
-│📍 ${prefix}ping
-╰───────────────────────◆
+╭─〔 ⚙️ SYSTEM 〕─╮
+┃ ▸ ${prefix}menu
+┃ ▸ ${prefix}alive
+┃ ▸ ${prefix}ping
+┃ ▸ ${prefix}owner
+╰────────────────╯
 
-╭──〔 👑 *Owner Tools* 〕──◆
-│🔒 ${prefix}block
-│🔓 ${prefix}unblock
-│📤 ${prefix}join
-│📥 ${prefix}leave
-│🧃 ${prefix}autolikestatus
-│🧬 ${prefix}autobio
-│👨‍💻 ${prefix}setppbot
-│📛 ${prefix}setstatus
-│✏️ ${prefix}setnamebot
-╰───────────────────────◆
+╭─〔 👑 OWNER PANEL 〕─╮
+┃ ▸ ${prefix}block / unblock
+┃ ▸ ${prefix}join / leave
+┃ ▸ ${prefix}autolikestatus
+┃ ▸ ${prefix}autobio
+┃ ▸ ${prefix}setppbot
+┃ ▸ ${prefix}setstatus
+┃ ▸ ${prefix}setnamebot
+╰────────────────────╯
 
-╭──〔 🧠 *GPT / AI Zone* 〕──◆
-│💬 ${prefix}ai
-│🤖 ${prefix}gpt
-│🖌️ ${prefix}dalle
-│📣 ${prefix}chatbot
-│🐞 ${prefix}bug
-│📝 ${prefix}report
-╰───────────────────────◆
+╭─〔 🧠 GPT & AI ZONE 〕─╮
+┃ ▸ ${prefix}ai
+┃ ▸ ${prefix}gpt
+┃ ▸ ${prefix}dalle
+┃ ▸ ${prefix}chatbot
+┃ ▸ ${prefix}bug
+┃ ▸ ${prefix}report
+╰─────────────────────╯
 
-╭──〔 🎧 *Media / Downloader* 〕──◆
-│🎶 ${prefix}play
-│🎥 ${prefix}video
-│📸 ${prefix}gimage
-│💌 ${prefix}attp
-╰───────────────────────◆
+╭─〔 🎧 MEDIA / DOWNLOADS 〕─╮
+┃ ▸ ${prefix}play
+┃ ▸ ${prefix}video
+┃ ▸ ${prefix}gimage
+┃ ▸ ${prefix}attp
+╰──────────────────────────╯
 
-╭──〔 🔍 *Search Tools* 〕──◆
-│🌐 ${prefix}google
-│📄 ${prefix}lyrics
-│🎞️ ${prefix}imdb
-│📦 ${prefix}mediafire
-│📘 ${prefix}facebook
-│📸 ${prefix}instagram
-│🎵 ${prefix}tiktok
-╰───────────────────────◆
+╭─〔 🔍 SEARCH MODULES 〕─╮
+┃ ▸ ${prefix}google
+┃ ▸ ${prefix}lyrics
+┃ ▸ ${prefix}imdb
+┃ ▸ ${prefix}mediafire
+┃ ▸ ${prefix}facebook
+┃ ▸ ${prefix}instagram
+┃ ▸ ${prefix}tiktok
+╰────────────────────────╯
 
-╭──〔 🎭 *Fun Tools* 〕──◆
-│🖼️ ${prefix}getpp
-│🔗 ${prefix}url
-╰───────────────────────◆
+╭─〔 🛠️ UTILITIES 〕─╮
+┃ ▸ ${prefix}getpp
+┃ ▸ ${prefix}url
+╰────────────────────╯
 
-╭──〔 🧾 *Info* 〕──◆
-│⏳ Uptime: Coming Soon...
-│📢 Dev: *Popkid-Xmd*
-╰━━━━━━━━━━━━━━━━━━━━━━━◆
+╭─〔 📊 STATUS 〕─╮
+┃ ▸ Uptime: ⏳ Coming Soon...
+┃ ▸ Powered by: *Popkid-Xmd*
+╰─────────────────╯
     `.trim();
 
     await sock.sendMessage(m.from, {
@@ -85,9 +86,13 @@ const menu = async (m, sock) => {
       contextInfo: {
         forwardingScore: 999,
         isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'Popkid-Xmd',
+          newsletterJid: '120363290715861418@newsletter'
+        },
         externalAdReply: {
-          title: `${config.BOT_NAME} | Menu`,
-          body: `Developed by ${config.OWNER_NAME}`,
+          title: `${config.BOT_NAME} | Main Console`,
+          body: `Built with 💻 by ${config.OWNER_NAME}`,
           thumbnailUrl: profilePictureUrl,
           mediaType: 1,
           renderLargerThumbnail: true,
