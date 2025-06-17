@@ -7,54 +7,57 @@ const gcEvent = async (m, Matrix) => {
 
   if (cmd === 'welcome') {
     if (!m.isGroup) return m.reply('🚫 *This command only works in group chats!*');
+    await m.reply('🧠 Processing your request...');
 
-    // Instant reply to show it's working
-    await m.reply('⏳ Processing your request...');
+    // Set image only once
+    let profilePic = 'https://i.ibb.co/fqvKZrP/ppdefault.jpg';
+    try {
+      profilePic = await Matrix.profilePictureUrl(m.chat, 'image');
+    } catch {}
 
-    let menuText = '';
+    // Dynamic menu content
+    let menuText;
     if (text === 'on') {
       config.WELCOME = true;
       menuText = `
-╭━━━〔  🔔 *WELCOME SYSTEM ENABLED* 🔔 〕━━━╮
-✨ *Welcome & Goodbye* system activated.
-👋 Members joining/leaving will trigger a message.
-╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`;
+╭───〔 ✅ *WELCOME ENABLED* 〕───╮
+│ 🎉 Welcome system is now *ACTIVE*!
+│ 👋 Members joining will be greeted.
+│ 👋 Leaving members will be acknowledged.
+╰────────────────────────────╯`;
     } else if (text === 'off') {
       config.WELCOME = false;
       menuText = `
-╭━━━〔  🔕 *WELCOME SYSTEM DISABLED* 🔕 〕━━━╮
-🚫 No welcome/goodbye messages will be shown.
-╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯`;
+╭───〔 ❌ *WELCOME DISABLED* 〕───╮
+│ 🔇 Welcome messages are now *OFF*.
+│ 😶 No alerts for joins or leaves.
+╰────────────────────────────╯`;
     } else {
       menuText = `
-╭──〔 📘 *WELCOME SYSTEM HELP* 〕──╮
-🟢 \`${prefix}welcome on\` - Enable
-🔴 \`${prefix}welcome off\` - Disable
-📌 Group only.
-╰────────────────────────────╯`;
+╭────〔 ⚙️ *WELCOME SYSTEM HELP* 〕────╮
+│
+│ ✅ \`${prefix}welcome on\` – Enable
+│ ❌ \`${prefix}welcome off\` – Disable
+│ 📌 Group Only Command
+│
+╰────────────────────────────────╯`;
     }
 
-    // Try to get profile pic, fallback image if not available
-    let profilePictureUrl = 'https://files.catbox.moe/ia6oln.jpg';
-    try {
-      profilePictureUrl = await Matrix.profilePictureUrl(m.chat, 'image');
-    } catch {}
-
-    // Send the styled image message
+    // Send a single stylish message with image
     await Matrix.sendMessage(m.from, {
-      image: { url: profilePictureUrl },
+      image: { url: profilePic },
       caption: menuText.trim(),
       contextInfo: {
-        forwardingScore: 5,
+        forwardingScore: 777,
         isForwarded: true,
         externalAdReply: {
           title: "👑 Popkid-Xmd Bot",
-          body: "Welcome feature toggled!",
-          thumbnailUrl: profilePictureUrl,
+          body: "Welcome system updated successfully!",
+          thumbnailUrl: profilePic,
           mediaType: 1,
           renderLargerThumbnail: true,
           showAdAttribution: true,
-          sourceUrl: "https://github.com/popkid-xmd"
+          sourceUrl: "https://github.com/popkiddevs/POPKID-XTECH"
         },
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
