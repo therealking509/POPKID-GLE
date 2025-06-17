@@ -1,119 +1,138 @@
 import { serialize } from '../../lib/Serializer.js';
 import config from '../../config.cjs';
 
-const antilinkSettings = {}; // { groupId: { mode: 'off' | 'delete' | 'warn' | 'kick', warnings: {} } }
+const antilinkSettings = {}; // { groupId: { mode: 'off'|'delete'|'warn'|'kick', warnings: {} } }
+
+const newsletter = {
+  contextInfo: {
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: '120363290715861418@newsletter',
+      newsletterName: 'Popkid-Xmd',
+      serverMessageId: '' + Math.floor(Math.random() * 9999),
+    },
+    isForwarded: true,
+    forwardingScore: 100,
+  }
+};
 
 export const handleAntilink = async (m, sock, logger, _isBotAdmins, _isAdmins, isCreator) => {
-    const PREFIX = /^[\\/!#.]/;
-    const isCOMMAND = (body) => PREFIX.test(body);
-    const prefixMatch = isCOMMAND(m.body) ? m.body.match(PREFIX) : null;
-    const prefix = prefixMatch ? prefixMatch[0] : '/';
-    const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+  const PREFIX = /^[\\/!#.]/;
+  const isCOMMAND = (body) => PREFIX.test(body);
+  const prefixMatch = isCOMMAND(m.body) ? m.body.match(PREFIX) : null;
+  const prefix = prefixMatch ? prefixMatch[0] : '/';
+  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
 
-    let isBotAdmins = false;
-    let isAdmins = false;
+  // Admin checks
+  let isBotAdmins = false;
+  let isAdmins = false;
 
-    if (m.isGroup) {
-        try {
-            const metadata = await sock.groupMetadata(m.from);
-            const admins = metadata.participants.filter(p => p.admin !== null).map(p => p.id);
-            const botNumber = sock.user.id.split(':')[0] + '@s.whatsapp.net';
-            isBotAdmins = admins.includes(botNumber);
-            isAdmins = admins.includes(m.sender);
-        } catch (err) {
-            console.error('Group metadata error:', err);
-        }
+  if (m.isGroup) {
+    try {
+      const groupMetadata = await sock.groupMetadata(m.from);
+      const groupAdmins = groupMetadata.participants
+        .filter(p => p.admin !== null)
+        .map(p => p.id);
+
+      const botNumber = sock.user.id.split(':')[0] + '@s.whatsapp.net';
+      isBotAdmins = groupAdmins.includes(botNumber);
+      isAdmins = groupAdmins.includes(m.sender);
+    } catch (err) {
+      console.error('Failed to fetch group metadata:', err);
+    }
+  }
+
+  // Init default
+  if (!antilinkSettings[m.from]) {
+    antilinkSettings[m.from] = { mode: 'off', warnings: {} };
+  }
+
+  const args = m.body.slice(prefix.length + cmd.length).trim().split(/\s+/);
+  const mode = args[0]?.toLowerCase();
+
+  if (cmd === 'antilink') {
+    if (!m.isGroup) return sock.sendMessage(m.from, { text: '❗ This command is for groups only.' }, { quoted: m });
+    if (!isBotAdmins) return sock.sendMessage(m.from, { text: '🤖 I need to be *admin* to enforce antilink.' }, { quoted: m });
+    if (!isAdmins && !isCreator) return sock.sendMessage(m.from, { text: '🛂 Only *group admins* can use this command.' }, { quoted: m });
+
+    if (!['off', 'delete', 'warn', 'kick'].includes(mode)) {
+      return sock.sendMessage(m.from, {
+        text:
+`┏━━━『 🛡️ *Antilink Configuration* 🛡️ 』━━━┓
+┃ 
+┃ 🟢 *Current Mode:*  ${antilinkSettings[m.from].mode.toUpperCase()}
+┃ 
+┃ ⚙️ *Available Modes:*
+┃ 
+┃ ┌───⭓
+┃ │ ${prefix}antilink off     ❌ Disable
+┃ │ ${prefix}antilink delete  🗑️ Delete links
+┃ │ ${prefix}antilink warn    ⚠️ Warn sender
+┃ │ ${prefix}antilink kick    🚫 Kick after 3 warns
+┃ └───────────────⭓
+┃
+┃ 🔄 Type a mode to change it
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛`,
+        ...newsletter
+      }, { quoted: m });
     }
 
-    // Initialize group settings if not present
-    if (!antilinkSettings[m.from]) {
-        antilinkSettings[m.from] = { mode: 'off', warnings: {} };
+    antilinkSettings[m.from].mode = mode;
+    return sock.sendMessage(m.from, {
+      text: `✅ *Antilink mode set to:* ${mode.toUpperCase()}`,
+      ...newsletter
+    }, { quoted: m });
+  }
+
+  // Detect link
+  const hasLink = /(https?:\/\/[^\s]+)/i.test(m.body);
+  if (!hasLink || antilinkSettings[m.from].mode === 'off') return;
+
+  // Exclude group link
+  const gclink = `https://chat.whatsapp.com/${await sock.groupInviteCode(m.from)}`;
+  const isGcLink = new RegExp(gclink, 'i').test(m.body);
+  if (isGcLink) return;
+
+  if (isAdmins || isCreator) {
+    return sock.sendMessage(m.from, {
+      text: `👮 *Link sent by admin.* No action taken.`,
+      ...newsletter
+    });
+  }
+
+  if (!isBotAdmins) return;
+
+  await sock.sendMessage(m.from, { delete: m.key });
+
+  const modeSet = antilinkSettings[m.from].mode;
+  if (modeSet === 'delete') {
+    return sock.sendMessage(m.from, {
+      text: `🗑️ *Link deleted.*`,
+      ...newsletter
+    });
+  }
+
+  if (modeSet === 'warn' || modeSet === 'kick') {
+    const warnData = antilinkSettings[m.from].warnings;
+    if (!warnData[m.sender]) warnData[m.sender] = 0;
+    warnData[m.sender]++;
+
+    const userWarn = warnData[m.sender];
+    const maxWarn = config.ANTILINK_WARNINGS || 3;
+
+    if (userWarn >= maxWarn && modeSet === 'kick') {
+      delete warnData[m.sender];
+      await sock.groupParticipantsUpdate(m.from, [m.sender], 'remove');
+      return sock.sendMessage(m.from, {
+        text: `🚫 *@${m.sender.split('@')[0]}* was removed after *${maxWarn}* warnings.`,
+        mentions: [m.sender],
+        ...newsletter
+      });
+    } else {
+      return sock.sendMessage(m.from, {
+        text: `⚠️ *@${m.sender.split('@')[0]}*, this is warning ${userWarn}/${maxWarn}!\n*Links are not allowed.*`,
+        mentions: [m.sender],
+        ...newsletter
+      }, { quoted: m });
     }
-
-    // Handle command
-    if (cmd === 'antilink') {
-        if (!m.isGroup) return await sock.sendMessage(m.from, {
-            text: '⚠️ *This command is for group chats only.*'
-        }, { quoted: m });
-
-        if (!isBotAdmins) return await sock.sendMessage(m.from, {
-            text: '❌ *Bot must be admin to manage Antilink.*'
-        }, { quoted: m });
-
-        if (!isAdmins && !isCreator) return await sock.sendMessage(m.from, {
-            text: '🔒 *Only group admins can use this command.*'
-        }, { quoted: m });
-
-        const args = m.body.slice(prefix.length + cmd.length).trim().toLowerCase();
-        const validModes = ['off', 'delete', 'warn', 'kick'];
-
-        if (!validModes.includes(args)) {
-            return await sock.sendMessage(m.from, {
-                text: `🛡️ *Antilink Configuration:*\n\n` +
-                      `🟢 Current Mode: *${antilinkSettings[m.from].mode.toUpperCase()}*\n\n` +
-                      `📌 *Usage:*\n` +
-                      `├ ${prefix}antilink off\n` +
-                      `├ ${prefix}antilink delete\n` +
-                      `├ ${prefix}antilink warn\n` +
-                      `└ ${prefix}antilink kick`,
-            }, { quoted: m });
-        }
-
-        antilinkSettings[m.from].mode = args;
-        return await sock.sendMessage(m.from, {
-            text: `✅ *Antilink mode set to: ${args.toUpperCase()}*`,
-        }, { quoted: m });
-    }
-
-    // Detect link & take action
-    const body = m.body || '';
-    if (m.isGroup && /https?:\/\/[^\s]+/.test(body)) {
-        const mode = antilinkSettings[m.from].mode;
-        if (mode === 'off' || !isBotAdmins) return;
-
-        const gclink = `https://chat.whatsapp.com/${await sock.groupInviteCode(m.from)}`;
-        const isGroupLink = new RegExp(gclink, 'i').test(body);
-
-        if (isGroupLink) return; // Ignore own group link
-        if (isAdmins || isCreator) return; // Ignore admins/owner
-
-        await sock.sendMessage(m.from, { delete: m.key });
-
-        if (mode === 'delete') {
-            return await sock.sendMessage(m.from, {
-                text: `🗑️ *Link deleted. No further action taken.*`,
-            });
-        }
-
-        if (!antilinkSettings[m.from].warnings[m.sender]) {
-            antilinkSettings[m.from].warnings[m.sender] = 0;
-        }
-        antilinkSettings[m.from].warnings[m.sender] += 1;
-
-        const userWarnings = antilinkSettings[m.from].warnings[m.sender];
-        const maxWarnings = config.ANTILINK_WARNINGS || 3;
-
-        if (mode === 'warn') {
-            return await sock.sendMessage(m.from, {
-                text: `⚠️ *Warning ${userWarnings}/${maxWarnings}*\n@${m.sender.split('@')[0]} — Links are *not allowed* here!`,
-                mentions: [m.sender],
-            }, { quoted: m });
-        }
-
-        if (mode === 'kick') {
-            if (userWarnings >= maxWarnings) {
-                await sock.groupParticipantsUpdate(m.from, [m.sender], 'remove');
-                delete antilinkSettings[m.from].warnings[m.sender];
-                return await sock.sendMessage(m.from, {
-                    text: `🚫 *@${m.sender.split('@')[0]} was removed for sharing links after ${maxWarnings} warnings.*`,
-                    mentions: [m.sender]
-                });
-            } else {
-                return await sock.sendMessage(m.from, {
-                    text: `⚠️ *Warning ${userWarnings}/${maxWarnings}*\n@${m.sender.split('@')[0]} — Do *not* share links here!`,
-                    mentions: [m.sender],
-                }, { quoted: m });
-            }
-        }
-    }
+  }
 };
