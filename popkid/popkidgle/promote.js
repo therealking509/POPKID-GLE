@@ -12,7 +12,7 @@ export const promoteRevoke = async (m, sock, isCreator) => {
     }
   };
 
-  const image = { url: 'https://your-server.com/images/promotion-banner.jpg' }; // ⬅️ Use your actual image URL here
+  const image = { url: 'https://files.catbox.moe/kiy0hl.jpg' }; // ⬅️ Use your actual image URL here
 
   if (!m.isGroup) {
     return await sock.sendMessage(m.from, {
