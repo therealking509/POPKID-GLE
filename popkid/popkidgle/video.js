@@ -63,9 +63,9 @@ const videoCommand = async (m, sock) => {
         forwardingScore: 5,
         isForwarded: true,
         externalAdReply: {
-          title: "Popkid XMD YT MENU",
+          title: "ᴘᴏᴘᴋɪᴅ xᴍᴅ ᴠɪᴅᴇᴏ",
           body: "Streaming via Popkid XMD Bot",
-          thumbnailUrl: "https://raw.githubusercontent.com/joeljamestech2/JOEL-XMD/main/mydata/media/thumbnail.jpg",
+          thumbnailUrl: "https://files.catbox.moe/cwuypf.jpg",
           sourceUrl: video.url,
           mediaType: 1,
           renderLargerThumbnail: true
@@ -83,12 +83,12 @@ const videoCommand = async (m, sock) => {
     const videoMsg = {
       video: { url: videoData.download_url },
       mimetype: "video/mp4",
-      caption: "🎥 Powered by Popkid XMD Bot\nStreaming now ↻ ◁ II ▷ ↺",
+      caption: "🎥 ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘᴏᴘᴋɪᴅ xᴍᴅ ʙᴏᴛ\nStreaming now ↻ ◁ II ▷ ↺",
       contextInfo: {
         forwardingScore: 5,
         isForwarded: true,
         externalAdReply: {
-          title: "Popkid XMD BOT",
+          title: "ᴘᴏᴘᴋɪᴅ xᴍᴅ ʙᴏᴛ",
           body: "Streaming now ↻ ◁ II ▷ ↺",
           thumbnailUrl: videoData.thumbnail,
           sourceUrl: video.url,
