@@ -12,7 +12,7 @@ export const demoteCommand = async (m, sock, isCreator) => {
     }
   };
 
-  const image = { url: 'https://your-server.com/images/demote-banner.jpg' }; // Replace with your custom image
+  const image = { url: 'https://files.catbox.moe/kiy0hl.jpg' }; // Replace with your custom image
 
   if (!m.isGroup) {
     return await sock.sendMessage(m.from, {
