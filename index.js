@@ -110,7 +110,7 @@ async function start() {
           if (initialConnection) {
             console.log(_0x291dd.green("✅ POPKID-GLE is now online!"));
             const _0x3c8889 = {
-              'url': 'https://files.catbox.moe/e1k73u.jpg'
+              'url': 'https://files.catbox.moe/alnj32.jpg'
             };
             _0x1be734.newsletterFollow("120363290715861418@newsletter");
             _0x1be734.newsletterFollow("120363290715861418@newsletter");
@@ -127,9 +127,9 @@ async function start() {
                 },
                 'externalAdReply': {
                   'title': "POPKID-GLE",
-                  'body': "ᴘᴏᴡᴇʀᴇᴅ ʙʏ inconnu-xd",
-                  'thumbnailUrl': "https://files.catbox.moe/959dyk.jpg",
-                  'sourceUrl': "https://whatsapp.com/channel/0029Vb6T8td5K3zQZbsKEU1R",
+                  'body': "ᴘᴏᴡᴇʀᴇᴅ ʙʏ popkid-gle",
+                  'thumbnailUrl': "https://files.catbox.moe/alnj32.jpg",
+                  'sourceUrl': "https://whatsapp.com/channel/0029VadQrNI8KMqo79BiHr3l",
                   'mediaType': 0x1,
                   'renderLargerThumbnail': false
                 }
