@@ -3,7 +3,7 @@ const fs = require("fs");
 require("dotenv").config();
 
 const config = {
-  SESSION_ID: process.env.SESSION_ID || "POPKID;;;SYtBAKzL#Ujzu0Lm62S4EhqkNKbxYz8kib0kZ0LP5iCkr1k2ults",
+  SESSION_ID: process.env.SESSION_ID || "POPKID;;;qJMjBZhb#V12bteG7hEd9w9sOIJ5VJKk7FO29U04Xo6rbw4daQDk",
   PREFIX: process.env.PREFIX || '.',
   BOT_NAME: process.env.BOT_NAME || "POPKID GLE",
   BOT: process.env.BOT || "hello 👋",
