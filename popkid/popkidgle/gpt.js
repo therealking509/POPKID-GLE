@@ -1,5 +1,5 @@
-import config from '../config.cjs';
-import axios from 'axios';
+const axios = require('axios');
+const config = require('../config.cjs');
 
 const gpt = async (m, Matrix) => {
   const prefix = config.PREFIX;
@@ -7,12 +7,11 @@ const gpt = async (m, Matrix) => {
   const prompt = m.body.slice(prefix.length + cmd.length + 1);
 
   if (cmd === 'gpt') {
-    const reactionEmojis = ['🧠', '📚', '🤖', '💡', '🚀', '🎯'];
-    const textEmojis = ['🔍', '🧬', '📖', '💭', '🌐', '✨'];
+    const reactionEmojis = ['🤖', '💡', '🚀', '📚'];
+    const textEmojis = ['🔍', '✨', '🧠', '📖'];
 
     const reactionEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
     let textEmoji = textEmojis[Math.floor(Math.random() * textEmojis.length)];
-
     while (textEmoji === reactionEmoji) {
       textEmoji = textEmojis[Math.floor(Math.random() * textEmojis.length)];
     }
@@ -21,15 +20,14 @@ const gpt = async (m, Matrix) => {
 
     if (!prompt) {
       return await Matrix.sendMessage(m.from, {
-        text: `${textEmoji} *Ask me anything using GPT!*\n\nExample:\n${prefix}gpt What is artificial intelligence?`,
+        text: `${textEmoji} *Ask me anything!*\n\nExample:\n${prefix}gpt What is the future of AI?`,
         contextInfo: {
           mentionedJid: [m.sender],
           forwardingScore: 999,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
             newsletterJid: '120363290715861418@newsletter',
-            newsletterName: "Popkid",
-            serverMessageId: 144
+            newsletterName: "Popkid"
           }
         }
       }, { quoted: m });
@@ -57,7 +55,7 @@ const gpt = async (m, Matrix) => {
 
       if (!replyText) {
         return await Matrix.sendMessage(m.from, {
-          text: "⚠️ I didn’t receive a valid response. Try rephrasing your question.",
+          text: "⚠️ GPT gave no response. Try again with a different prompt.",
           quoted: m
         });
       }
@@ -70,7 +68,7 @@ const gpt = async (m, Matrix) => {
           isForwarded: true,
           externalAdReply: {
             title: "GPT - Popkid AI",
-            body: "🤖 Powered by Groq LLaMA3",
+            body: "🤖 Powered by LLaMA3 via Groq",
             mediaType: 1,
             thumbnailUrl: "https://i.ibb.co/NymxRZH/ai-icon.png",
             sourceUrl: "https://groq.com",
@@ -86,11 +84,11 @@ const gpt = async (m, Matrix) => {
     } catch (error) {
       console.error("❌ GPT Error:", error?.response?.data || error.message);
       return await Matrix.sendMessage(m.from, {
-        text: `🚫 *GPT Request Failed!*\n\n💥 *Reason:* ${error?.response?.data?.error?.message || "Unknown error occurred."}`,
+        text: `🚫 *GPT Request Failed!*\n\n💥 *Reason:* ${error?.response?.data?.error?.message || error.message}`,
         quoted: m
       });
     }
   }
 };
 
-export default gpt;
+module.exports = gpt;
