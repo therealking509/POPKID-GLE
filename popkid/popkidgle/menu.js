@@ -17,7 +17,7 @@ const menu = async (m, sock) => {
     const seconds = Math.floor(uptimeSeconds % 60);
     const uptime = `${hours}h ${minutes}m ${seconds}s`;
 
-    let profilePictureUrl = 'https://telegra.ph/file/kiy0hl.jpg'; // 🔁 Replace with your own image URL if you like
+    let profilePictureUrl = 'https://files.catbox.moe/x18hgf.jpg'; // 🔁 Replace with your own image URL if you like
     try {
       const pp = await sock.profilePictureUrl(m.sender, 'image');
       if (pp) profilePictureUrl = pp;
