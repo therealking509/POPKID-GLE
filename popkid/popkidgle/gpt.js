@@ -1,28 +1,45 @@
-import axios from 'axios';
 import config from '../config.cjs';
-import { generateWAMessageFromContent } from '@whiskeysockets/baileys';
+import axios from 'axios';
 
-const command = {
-  name: 'gpt',
-  alias: [],
-  description: 'Ask any question to GPT (via Groq LLaMA)',
-  category: 'ai',
-  usage: `${config.PREFIX}gpt [your question]`,
+const gpt = async (m, Matrix) => {
+  const prefix = config.PREFIX;
+  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+  const prompt = m.body.slice(prefix.length + cmd.length + 1);
 
-  start: async (m, ctx) => {
-    const { sock, args, reply, from } = ctx;
+  if (cmd === 'gpt') {
+    const reactionEmojis = ['🧠', '📚', '🤖', '💡', '🚀', '🎯'];
+    const textEmojis = ['🔍', '🧬', '📖', '💭', '🌐', '✨'];
 
-    if (!args || args.length === 0) {
-      return reply('🤖 *Hello!*\nWhat question would you like to ask me?\n\n_Example:_\n.gpt What is AI?');
+    const reactionEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
+    let textEmoji = textEmojis[Math.floor(Math.random() * textEmojis.length)];
+
+    while (textEmoji === reactionEmoji) {
+      textEmoji = textEmojis[Math.floor(Math.random() * textEmojis.length)];
     }
 
-    const prompt = args.join(' ');
+    await m.React(reactionEmoji);
+
+    if (!prompt) {
+      return await Matrix.sendMessage(m.from, {
+        text: `${textEmoji} *Ask me anything using GPT!*\n\nExample:\n${prefix}gpt What is artificial intelligence?`,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: '120363290715861418@newsletter',
+            newsletterName: "Popkid",
+            serverMessageId: 144
+          }
+        }
+      }, { quoted: m });
+    }
 
     try {
       const res = await axios.post(
         'https://api.groq.com/openai/v1/chat/completions',
         {
-          model: 'llama3-8b-8192', // ✅ Valid Groq model
+          model: 'llama3-70b-8192',
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.7,
           max_tokens: 1000
@@ -37,39 +54,43 @@ const command = {
       );
 
       const replyText = res.data?.choices?.[0]?.message?.content?.trim();
-      if (!replyText) return reply("⚠️ I didn’t receive a valid response. Try again later.");
 
-      const message = generateWAMessageFromContent(from, {
-        message: {
-          extendedTextMessage: {
-            text: `💡 *GPT Response:*\n\n*You asked:* ${prompt}\n\n*Answer:*\n${replyText}`,
-            contextInfo: {
-              forwardingScore: 999,
-              isForwarded: true,
-              externalAdReply: {
-                title: "GPT - Popkid AI",
-                body: "🤖 Powered by LLaMA 3 via Groq",
-                mediaType: 1,
-                thumbnailUrl: "https://i.ibb.co/NymxRZH/ai-icon.png",
-                sourceUrl: "https://groq.com",
-                renderLargerThumbnail: true
-              },
-              forwardedNewsletterMessageInfo: {
-                newsletterJid: "120363290715861418@newsletter",
-                newsletterName: "Popkid-Xmd"
-              }
-            }
+      if (!replyText) {
+        return await Matrix.sendMessage(m.from, {
+          text: "⚠️ I didn’t receive a valid response. Try rephrasing your question.",
+          quoted: m
+        });
+      }
+
+      await Matrix.sendMessage(m.from, {
+        text: `${textEmoji} *GPT Response:*\n\n${replyText}`,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          forwardingScore: 999,
+          isForwarded: true,
+          externalAdReply: {
+            title: "GPT - Popkid AI",
+            body: "🤖 Powered by Groq LLaMA3",
+            mediaType: 1,
+            thumbnailUrl: "https://i.ibb.co/NymxRZH/ai-icon.png",
+            sourceUrl: "https://groq.com",
+            renderLargerThumbnail: true
+          },
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: '120363290715861418@newsletter',
+            newsletterName: "Popkid"
           }
         }
-      }, {});
+      }, { quoted: m });
 
-      await sock.relayMessage(from, message.message, { messageId: message.key.id });
-
-    } catch (e) {
-      console.error('❌ GPT Error:', e.response?.data || e.message);
-      return reply('🚫 *GPT Request Failed!*\nPlease check your API key or try again later.');
+    } catch (error) {
+      console.error("❌ GPT Error:", error?.response?.data || error.message);
+      return await Matrix.sendMessage(m.from, {
+        text: `🚫 *GPT Request Failed!*\n\n💥 *Reason:* ${error?.response?.data?.error?.message || "Unknown error occurred."}`,
+        quoted: m
+      });
     }
   }
 };
 
-export default command;
+export default gpt;
