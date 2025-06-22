@@ -8,64 +8,119 @@ const acr = new acrcloud({
   access_secret: 'Lz75UbI8g6AzkLRQgTgHyBlaQq9YT5wonr3xhFkf'
 });
 
-const shazam = async (m, gss) => {
+const shazam = async (m, gss, sock) => {
   try {
     const prefix = config.PREFIX;
     const cmd = m.body.startsWith(prefix)
       ? m.body.slice(prefix.length).split(' ')[0].toLowerCase()
       : '';
-    const text = m.body.slice(prefix.length + cmd.length).trim();
 
     const validCommands = ['shazam', 'hansfind', 'whatmusic'];
     if (!validCommands.includes(cmd)) return;
 
     const quoted = m.quoted || {};
-    const mime = quoted.mimetype;
+    const mime =
+      quoted?.mimetype ||
+      quoted?.msg?.mimetype ||
+      quoted?.documentMessage?.mimetype ||
+      '';
 
-    if (!quoted || (!mime?.includes('audio') && !mime?.includes('video'))) {
-      return m.reply(
-        `🎧 *Music ID Request*\n\n` +
-        `Please quote an *audio* or *video* message to identify its music.\n\n` +
-        `_Example:_\nReply to a voice note or video clip with:\n*${prefix}shazam*`
-      );
+    const isMedia =
+      quoted?.audioMessage ||
+      quoted?.videoMessage ||
+      (quoted?.documentMessage && mime.startsWith('audio')) ||
+      mime.startsWith('audio') ||
+      mime.startsWith('video');
+
+    if (!quoted || !isMedia) {
+      return sock.sendMessage(m.from, {
+        text:
+          `🎧 *Music ID Request*\n\n` +
+          `Please quote an *audio*, *video*, or *music file* to identify its song.\n\n` +
+          `_Example:_ Reply to a voice note, video, or song with:\n*${prefix}shazam*`,
+        contextInfo: {
+          forwardingScore: 5,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterName: 'Popkid-Xmd',
+            newsletterJid: '120363290715861418@newsletter'
+          }
+        }
+      }, { quoted: m });
     }
 
     const media = await quoted.download();
-    const filePath = `./${Date.now()}.mp3`;
+    const filePath = `./tmp-${Date.now()}.mp3`;
     fs.writeFileSync(filePath, media);
 
-    await m.reply('🔍 *Identifying the track...*\nPlease wait a moment.');
+    await sock.sendMessage(m.from, {
+      text: '🔍 *Identifying the track...*\nPlease wait...',
+      contextInfo: {
+        forwardingScore: 5,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'Popkid-Xmd',
+          newsletterJid: '120363290715861418@newsletter'
+        }
+      }
+    }, { quoted: m });
 
-    const res = await acr.identify(fs.readFileSync(filePath));
-    fs.unlinkSync(filePath); // Delete temp file
+    const result = await acr.identify(fs.readFileSync(filePath));
+    fs.unlinkSync(filePath); // Cleanup
 
-    const { code, msg } = res.status;
-    if (code !== 0) {
-      throw new Error(msg);
+    const { code, msg } = result.status;
+    if (code !== 0 || !result.metadata?.music?.length) {
+      throw new Error(msg || 'No match found');
     }
 
-    const music = res.metadata.music[0];
+    const music = result.metadata.music[0];
     const {
       title,
       artists,
       album,
       genres,
-      release_date
+      release_date,
+      external_metadata
     } = music;
 
-    const resultMessage =
+    const youtube = external_metadata?.youtube?.vid;
+    const spotify = external_metadata?.spotify?.track?.external_urls?.spotify;
+
+    const response =
       `🎶 *TRACK IDENTIFIED!*\n\n` +
       `• 📌 *Title:* ${title || 'Unknown'}\n` +
       `• 👤 *Artist:* ${artists?.map(a => a.name).join(', ') || 'Unknown'}\n` +
       `• 💿 *Album:* ${album?.name || 'Unknown'}\n` +
       `• 🎼 *Genre:* ${genres?.map(g => g.name).join(', ') || 'Unknown'}\n` +
       `• 📅 *Release:* ${release_date || 'Unknown'}\n\n` +
-      `✅ _Powered by ACRCloud_`;
+      (youtube ? `▶️ *YouTube:* https://youtu.be/${youtube}\n` : '') +
+      (spotify ? `🎧 *Spotify:* ${spotify}\n` : '') +
+      `\n✅ _Powered by ACRCloud_`;
 
-    await m.reply(resultMessage);
+    await sock.sendMessage(m.from, {
+      text: response.trim(),
+      contextInfo: {
+        forwardingScore: 5,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'Popkid-Xmd',
+          newsletterJid: '120363290715861418@newsletter'
+        }
+      }
+    }, { quoted: m });
   } catch (err) {
-    console.error('Shazam error:', err);
-    await m.reply('⚠️ *An error occurred while identifying the music.*\n\nPlease try again with a valid audio or video.');
+    console.error('Shazam Error:', err);
+    await sock.sendMessage(m.from, {
+      text: '⚠️ *Error identifying the music.*\nPlease try again with a longer or clearer audio clip.',
+      contextInfo: {
+        forwardingScore: 5,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: 'Popkid-Xmd',
+          newsletterJid: '120363290715861418@newsletter'
+        }
+      }
+    }, { quoted: m });
   }
 };
 
