@@ -1,26 +1,16 @@
-const axios = require('axios');
-const config = require('../config.cjs');
+import config from '../config.cjs';
+import axios from 'axios';
 
 const gpt = async (m, Matrix) => {
   const prefix = config.PREFIX;
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
-  const prompt = m.body.slice(prefix.length + cmd.length + 1);
+  const text = m.body.slice(prefix.length + cmd.length).trim();
 
   if (cmd === 'gpt') {
-    const reactionEmojis = ['🤖', '💡', '🚀', '📚'];
-    const textEmojis = ['🔍', '✨', '🧠', '📖'];
-
-    const reactionEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
-    let textEmoji = textEmojis[Math.floor(Math.random() * textEmojis.length)];
-    while (textEmoji === reactionEmoji) {
-      textEmoji = textEmojis[Math.floor(Math.random() * textEmojis.length)];
-    }
-
-    await m.React(reactionEmoji);
-
-    if (!prompt) {
-      return await Matrix.sendMessage(m.from, {
-        text: `${textEmoji} *Ask me anything!*\n\nExample:\n${prefix}gpt What is the future of AI?`,
+    if (!text) {
+      await m.React('🤖');
+      return Matrix.sendMessage(m.from, {
+        text: "🤖 *Hello!*\nPlease ask me something like:\n\n.gpt What is AI?",
         contextInfo: {
           mentionedJid: [m.sender],
           forwardingScore: 999,
@@ -33,12 +23,14 @@ const gpt = async (m, Matrix) => {
       }, { quoted: m });
     }
 
+    await m.React('💭');
+
     try {
       const res = await axios.post(
         'https://api.groq.com/openai/v1/chat/completions',
         {
-          model: 'llama3-70b-8192',
-          messages: [{ role: 'user', content: prompt }],
+          model: 'llama3-70b-8192', // Or 'meta-llama/llama-4-scout-17b-16e-instruct' if verified working
+          messages: [{ role: 'user', content: text }],
           temperature: 0.7,
           max_tokens: 1000
         },
@@ -47,30 +39,33 @@ const gpt = async (m, Matrix) => {
             Authorization: `Bearer ${config.GROQ_API_KEY}`,
             'Content-Type': 'application/json'
           },
-          timeout: 15000
+          timeout: 20000
         }
       );
 
       const replyText = res.data?.choices?.[0]?.message?.content?.trim();
 
       if (!replyText) {
-        return await Matrix.sendMessage(m.from, {
-          text: "⚠️ GPT gave no response. Try again with a different prompt.",
+        await m.React('⚠️');
+        return Matrix.sendMessage(m.from, {
+          text: "⚠️ I didn’t receive a valid response. Try again with a better prompt.",
           quoted: m
         });
       }
 
+      await m.React('✅');
+
       await Matrix.sendMessage(m.from, {
-        text: `${textEmoji} *GPT Response:*\n\n${replyText}`,
+        text: `💡 *GPT Response:*\n\n${replyText}`,
         contextInfo: {
           mentionedJid: [m.sender],
           forwardingScore: 999,
           isForwarded: true,
           externalAdReply: {
             title: "GPT - Popkid AI",
-            body: "🤖 Powered by LLaMA3 via Groq",
-            mediaType: 1,
+            body: "🤖 Powered by LLaMA via Groq",
             thumbnailUrl: "https://i.ibb.co/NymxRZH/ai-icon.png",
+            mediaType: 1,
             sourceUrl: "https://groq.com",
             renderLargerThumbnail: true
           },
@@ -81,14 +76,15 @@ const gpt = async (m, Matrix) => {
         }
       }, { quoted: m });
 
-    } catch (error) {
-      console.error("❌ GPT Error:", error?.response?.data || error.message);
-      return await Matrix.sendMessage(m.from, {
-        text: `🚫 *GPT Request Failed!*\n\n💥 *Reason:* ${error?.response?.data?.error?.message || error.message}`,
+    } catch (err) {
+      console.error("❌ GPT Error:", err.response?.data || err.message || err);
+      await m.React('❌');
+      return Matrix.sendMessage(m.from, {
+        text: `🚫 *GPT Request Failed!*\n\n💥 *Reason:* ${err.response?.data?.error?.message || err.message || 'Unknown error.'}`,
         quoted: m
       });
     }
   }
 };
 
-module.exports = gpt;
+export default gpt;
