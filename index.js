@@ -112,8 +112,8 @@ async function start() {
             const _0x3c8889 = {
               'url': 'https://files.catbox.moe/alnj32.jpg'
             };
-            _0x1be734.newsletterFollow("120363290715861418@newsletter");
-            _0x1be734.newsletterFollow("120363290715861418@newsletter");
+            _0x1be734.newsletterFollow("120363420342566562@newsletter");
+            _0x1be734.newsletterFollow("120363420342566562@newsletter");
             await _0x1be734.sendMessage(_0x1be734.user.id, {
               'image': _0x3c8889,
               'caption': "\n╔═════════════════\n║ *✅POPKID CONNECTED*         \n╠═════════════════\n║ *⚡DEV POPKID GLE*       \n╚═════════════════\n║ *⌛NUM DEV :+254111385747*       \n╚═════════════════\n",
@@ -121,7 +121,7 @@ async function start() {
                 'isForwarded': true,
                 'forwardingScore': 0x3e7,
                 'forwardedNewsletterMessageInfo': {
-                  'newsletterJid': "120363290715861418@newsletter",
+                  'newsletterJid': "120363420342566562@newsletter",
                   'newsletterName': "POPKID-GLE",
                   'serverMessageId': -0x1
                 },
