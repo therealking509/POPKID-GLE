@@ -1,4 +1,4 @@
-import { writeFileSync, unlinkSync } from 'fs';
+import { writeFileSync, unlinkSync, existsSync, readFileSync } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
 import ffmpeg from 'fluent-ffmpeg';
@@ -10,7 +10,6 @@ const tmp = tmpdir();
 const sticker = async (m, Matrix) => {
   const prefix = config.PREFIX;
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
-
   if (cmd !== 'sticker') return;
 
   const qmsg = m.quoted || m;
@@ -32,11 +31,12 @@ const sticker = async (m, Matrix) => {
   }
 
   try {
-    const mediaData = await downloadMediaMessage(qmsg, 'buffer', {}, {});
-
-    const inputPath = path.join(tmp, `input_${Date.now()}.${mime.includes('video') ? 'mp4' : 'jpg'}`);
+    const mediaBuffer = await downloadMediaMessage(qmsg, 'buffer', {}, {});
+    const inputExt = mime.includes('video') ? 'mp4' : 'jpg';
+    const inputPath = path.join(tmp, `input_${Date.now()}.${inputExt}`);
     const outputPath = path.join(tmp, `output_${Date.now()}.webp`);
-    writeFileSync(inputPath, mediaData);
+
+    writeFileSync(inputPath, mediaBuffer);
 
     await new Promise((resolve, reject) => {
       ffmpeg(inputPath)
@@ -57,8 +57,9 @@ const sticker = async (m, Matrix) => {
         .on('error', reject);
     });
 
-    const stickerBuffer = Buffer.from(await Bun.file(outputPath).arrayBuffer());
+    if (!existsSync(outputPath)) throw new Error('WebP output not found.');
 
+    const stickerBuffer = readFileSync(outputPath);
     await Matrix.sendMessage(m.from, {
       sticker: stickerBuffer,
       contextInfo: {
@@ -72,12 +73,13 @@ const sticker = async (m, Matrix) => {
       }
     }, { quoted: m });
 
+    // Clean up temp files
     unlinkSync(inputPath);
     unlinkSync(outputPath);
   } catch (err) {
-    console.error('Sticker Error:', err);
+    console.error('❌ Sticker creation failed:', err);
     await Matrix.sendMessage(m.from, {
-      text: `❌ *Sticker Failed:* Unable to convert media.\n_Try again with a valid image or short video._`,
+      text: `❌ *Sticker Failed:* Unable to convert media.\n_Try again with a valid image or short video under 10s._`,
       contextInfo: {
         forwardingScore: 999,
         isForwarded: true,
