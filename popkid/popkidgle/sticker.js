@@ -12,9 +12,16 @@ const sticker = async (m, Matrix) => {
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
   if (cmd !== 'sticker') return;
 
-  const qmsg = m.quoted || m;
-  const mime = qmsg?.mimetype || '';
+  const isQuoted = !!m.quoted;
+  const msg = isQuoted ? m.quoted : m;
 
+  // 📌 Get MIME type from either quoted or main message
+  const mime = (msg.message?.imageMessage?.mimetype ||
+                msg.message?.videoMessage?.mimetype ||
+                msg.mimetype ||
+                '');
+
+  // ❌ No valid media detected
   if (!/image|video/.test(mime)) {
     return await Matrix.sendMessage(m.from, {
       text: `📸 Send or reply to an *image or short video* with:\n*${prefix}sticker*`,
@@ -31,7 +38,8 @@ const sticker = async (m, Matrix) => {
   }
 
   try {
-    const mediaBuffer = await downloadMediaMessage(qmsg, 'buffer', {}, {});
+    // ✅ Download media
+    const mediaBuffer = await downloadMediaMessage(msg, 'buffer', {}, {});
     const inputExt = mime.includes('video') ? 'mp4' : 'jpg';
     const inputPath = path.join(tmp, `input_${Date.now()}.${inputExt}`);
     const outputPath = path.join(tmp, `output_${Date.now()}.webp`);
@@ -57,8 +65,7 @@ const sticker = async (m, Matrix) => {
         .on('error', reject);
     });
 
-    if (!existsSync(outputPath)) throw new Error('WebP output not found.');
-
+    // ✅ Send sticker
     const stickerBuffer = readFileSync(outputPath);
     await Matrix.sendMessage(m.from, {
       sticker: stickerBuffer,
@@ -73,13 +80,12 @@ const sticker = async (m, Matrix) => {
       }
     }, { quoted: m });
 
-    // Clean up temp files
     unlinkSync(inputPath);
     unlinkSync(outputPath);
   } catch (err) {
-    console.error('❌ Sticker creation failed:', err);
+    console.error('❌ Sticker creation error:', err);
     await Matrix.sendMessage(m.from, {
-      text: `❌ *Sticker Failed:* Unable to convert media.\n_Try again with a valid image or short video under 10s._`,
+      text: `❌ *Sticker Failed:* Could not convert media.\n_Try again with a valid image or short video._`,
       contextInfo: {
         forwardingScore: 999,
         isForwarded: true,
