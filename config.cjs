@@ -10,7 +10,7 @@ const config = {
   CAPTION: process.env.CAPTION || "ᴘᴏᴡᴇʀᴇᴅ by popkid",
 
   // ✅ Groq API Key
-  GPT_API_KEY: process.env.GPT_API_KEY || "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",
+  GPT_API_KEY: process.env.GPT_API_KEY || "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",
 
   AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN !== undefined ? process.env.AUTO_STATUS_SEEN === 'true' : true,
   AUTO_BIO: process.env.AUTO_BIO !== undefined ? process.env.AUTO_BIO === 'true' : true,
