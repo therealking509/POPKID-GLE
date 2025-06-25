@@ -37,24 +37,26 @@ if (!fs.existsSync(sessionDir)) {
 
 // ✅ popkid Gle
 async function downloadSessionData() {
-  if (!config.SESSION_ID) {
-    console.error('❌ Please add your session to SESSION_ID env !!');
+  if (!config.SESSION_ID || !config.SESSION_ID.startsWith("POPKID$")) {
+    console.error('❌ Invalid SESSION_ID format. Use: POPKID$pastebinCode');
     return false;
   }
-  const sessdata = config.SESSION_ID.split("POPKID$")[1];
-  const url = `https://pastebin.com/raw/${sessdata}`;
+  const pasteId = config.SESSION_ID.split("POPKID$")[1];
+  const url = `https://pastebin.com/raw/${pasteId}`;
   try {
     const response = await axios.get(url);
     const data = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+    await fs.promises.mkdir(path.dirname(credsPath), { recursive: true });
     await fs.promises.writeFile(credsPath, data);
-    console.log("🔒 Session Successfully Loaded !!");
+    console.log("🔒 Session successfully loaded from Pastebin!");
     return true;
   } catch (error) {
+    console.error('❌ Failed to download session data:', error.message);
     return false;
   }
 }
 
-async function start() {
+async function startBot() {
   try {
     const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
     const { version, isLatest } = await fetchLatestBaileysVersion();
@@ -66,16 +68,17 @@ async function start() {
       printQRInTerminal: useQR,
       browser: ['POPKID-GLE', 'Safari', '3.3'],
       auth: state,
-      getMessage: async key => {
-        return { conversation: 'popkid-gle whatsapp user bot' };
-      }
+      getMessage: async key => ({
+        conversation: 'popkid-gle whatsapp user bot'
+      })
     });
 
     sock.ev.on("connection.update", async ({ connection, lastDisconnect }) => {
       if (connection === "close") {
-        if (lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut) {
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
+        if (statusCode !== DisconnectReason.loggedOut) {
           console.log(chalk.yellow("🔄 Reconnecting..."));
-          await start();
+          await startBot();
         } else {
           console.log(chalk.red("❌ Logged out. QR required."));
           process.exit(1);
@@ -86,12 +89,13 @@ async function start() {
 
           try {
             await sock.groupAcceptInvite("FHDEPkBBf281sUcdj17eU9");
-            console.log(chalk.green("✅ Successfully joined group."));
+            console.log(chalk.green("✅ Joined group successfully."));
           } catch (err) {
-            console.error(chalk.red("❌ Failed to join group: " + err.message));
+            console.error(chalk.red("❌ Group join failed: " + err.message));
           }
 
           await sock.newsletterFollow("120363420342566562@newsletter");
+
           await sock.sendMessage(sock.user.id, {
             image: { url: 'https://files.catbox.moe/alnj32.jpg' },
             caption: `
@@ -123,7 +127,7 @@ async function start() {
 
           initialConnection = false;
         } else {
-          console.log(chalk.blue("♻️ Reconnected successfully."));
+          console.log(chalk.blue("♻️ Connection re-established."));
         }
       }
     });
@@ -136,6 +140,7 @@ async function start() {
     if (config.MODE === 'public') sock.public = true;
     else sock.public = false;
 
+    //popkid
     sock.ev.on("messages.upsert", async m => {
       try {
         const msg = m.messages[0];
@@ -149,24 +154,24 @@ async function start() {
     });
 
   } catch (e) {
-    console.error("❌ Critical Error:", e);
+    console.error("❌ Fatal Error:", e.message);
     process.exit(1);
   }
 }
 
 async function init() {
   if (fs.existsSync(credsPath)) {
-    console.log("🔒 Session file found. Starting bot.");
-    await start();
+    console.log("🔒 Local session found. Starting bot.");
+    await startBot();
   } else {
     const downloaded = await downloadSessionData();
     if (downloaded) {
-      console.log("✅ Session downloaded, starting bot.");
-      await start();
+      console.log("✅ Session loaded. Starting bot.");
+      await startBot();
     } else {
-      console.log("❌ No session found. Showing QR.");
+      console.log("❌ No valid session. Displaying QR.");
       useQR = true;
-      await start();
+      await startBot();
     }
   }
 }
