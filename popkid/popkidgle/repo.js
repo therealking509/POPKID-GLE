@@ -10,7 +10,7 @@ const repo = async (m, sock) => {
 
     const owner = config.OWNER_NAME || 'Popkid';
     const githubRepo = 'https://github.com/devpopkid/POPKID-GLE';
-    const imageUrl = 'https://files.catbox.moe/x18hgf.jpg'; 
+    const imageUrl = 'https://files.catbox.moe/u46hbi.jpg'; 
 
     const repoText = `
 ╭───────────────⭓
