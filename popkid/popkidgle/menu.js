@@ -17,12 +17,15 @@ const menu = async (m, sock) => {
     const seconds = Math.floor(uptimeSeconds % 60);
     const uptime = `${hours}h ${minutes}m ${seconds}s`;
 
-    let profilePictureUrl = 'https://files.catbox.moe/x18hgf.jpg'; // 🔁 Replace with your own image URL if you like
+    let profilePictureUrl = 'https://files.catbox.moe/x18hgf.jpg'; 
     try {
-      const pp = await sock.profilePictureUrl(m.sender, 'image');
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 1500); 
+      const pp = await sock.profilePictureUrl(m.sender, 'image', { signal: controller.signal });
+      clearTimeout(timeout);
       if (pp) profilePictureUrl = pp;
     } catch (error) {
-      console.log('🖼️ No profile pic, using default.');
+      console.log('🖼️ Profile pic fetch timed out or failed.');
     }
 
     const menuText = `
@@ -232,17 +235,36 @@ const menu = async (m, sock) => {
 ━━━━━━━━━━━━━━━━━━
     `.trim();
 
+    const newsletterContext = {
+      forwardingScore: 999,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterName: "Popkid-Gle",
+        newsletterJid: "120363420342566562@newsletter"
+      }
+    };
+
+    // menu image message
     await sock.sendMessage(m.from, {
       image: { url: profilePictureUrl },
       caption: menuText,
-      contextInfo: {
-        forwardingScore: 999,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter"
-        }
-      }
+      contextInfo: newsletterContext
+    }, { quoted: m });
+
+    // 🎵 popkid random songs
+    const songUrls = [
+      'https://files.catbox.moe/2b33jv.mp3',
+      'https://files.catbox.moe/0cbqfa.mp3',
+      'https://files.catbox.moe/j4ids2.mp3',
+      'https://files.catbox.moe/vv2qla.mp3'  
+    ];
+    const random = songUrls[Math.floor(Math.random() * songUrls.length)];
+
+    await sock.sendMessage(m.from, {
+      audio: { url: random },
+      mimetype: 'audio/mpeg',
+      ptt: false,
+      contextInfo: newsletterContext
     }, { quoted: m });
   }
 };
