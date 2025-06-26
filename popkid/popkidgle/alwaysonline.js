@@ -13,7 +13,7 @@ const alwaysonlineCommand = async (m, Matrix) => {
     text: txt,
     contextInfo: {
       forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363290715861418@newsletter",
+        newsletterJid: "120363420342566562@newsletter",
         newsletterName: "Popkid-Xmd"
       }
     }
