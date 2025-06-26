@@ -26,7 +26,7 @@
 - <a href='https://signup.heroku.com/' target="_silver"><img alt='Heroku' src='https://img.shields.io/badge/-𝐂𝐑𝐄𝐀𝐓𝐄 𝐀𝐂𝐂𝐎𝐔𝐍𝐓 𝐍𝐎𝐖-rgb(224, 255, 255)?style=for-the-badge&logo=ferrari&logoColor=pink' width="240" height="38.45"/></a>
 
 # 🧡 ʜᴇʀᴏᴋᴜ ʜᴏsᴛɪɴɢ
-- <a align="center"><a href="https://dashboard.heroku.com/new?template=https://github.com/devpopkid/POPKID-GLE"> <img src="https://img.shields.io/badge/DEPLOY%20NOW-blue?style=for-the-badge&logo=porsche" width="220" height="38.45"/></a></p>
+- <a align="center"><a href="https://forkchecker.vercel.app/"> <img src="https://img.shields.io/badge/DEPLOY%20NOW-blue?style=for-the-badge&logo=porsche" width="220" height="38.45"/></a></p>
 
 # 🧡 Render Deployment 
 - <a align="center"><a href="https://dashboard.render.com/web/new"> <img src="https://img.shields.io/badge/RENDER%20DEPLOYMENT-red?style=for-the-badge&logo=nike" width="220" height="38.45"/></a></p>
