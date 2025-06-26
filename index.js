@@ -3,7 +3,6 @@ dotenv.config();
 
 import {
     makeWASocket,
-    Browsers,
     fetchLatestBaileysVersion,
     DisconnectReason,
     useMultiFileAuthState,
@@ -15,7 +14,6 @@ import fs from 'fs';
 import NodeCache from 'node-cache';
 import path from 'path';
 import chalk from 'chalk';
-import moment from 'moment-timezone';
 import axios from 'axios';
 import config from './config.cjs';
 import pkg from './lib/autoreact.cjs';
@@ -23,14 +21,10 @@ const { emojis, doReact } = pkg;
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const orange = chalk.bold.hex("#FFA500");
-const lime = chalk.bold.hex("#32CD32");
 let useQR = false;
 let initialConnection = true;
 
-const MAIN_LOGGER = pino({ timestamp: () => `,"time":"${new Date().toJSON()}"` });
-const logger = MAIN_LOGGER.child({});
-logger.level = "trace";
+const logger = pino({ level: 'trace', timestamp: () => `,"time":"${new Date().toJSON()}"` }).child({});
 const msgRetryCounterCache = new NodeCache();
 
 const __filename = new URL(import.meta.url).pathname;
@@ -43,8 +37,8 @@ if (!fs.existsSync(sessionDir)) {
 }
 
 async function downloadSessionData() {
-    if (!config.SESSION_ID || !config.SESSION_ID.includes('POPKID$')) {
-        console.error('❌ Invalid or missing SESSION_ID format. Expected POPKID$<pastebinId>');
+    if (!config.SESSION_ID || !config.SESSION_ID.includes("Popkidmd$")) {
+        console.error("❌ Invalid SESSION_ID format. Use: Popkidmd$<pastebinId>");
         return false;
     }
     const sessdata = config.SESSION_ID.split("Popkidmd$")[1];
@@ -53,10 +47,10 @@ async function downloadSessionData() {
         const response = await axios.get(url);
         const data = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
         await fs.promises.writeFile(credsPath, data);
-        console.log("🔒 Session Successfully Loaded !!");
+        console.log("🔒 Session Successfully Loaded!!");
         return true;
     } catch (error) {
-        console.error('❌ Failed to download session data:', error.message);
+        console.error("❌ Failed to download session:", error.message);
         return false;
     }
 }
@@ -67,49 +61,47 @@ async function start() {
         const { version, isLatest } = await fetchLatestBaileysVersion();
         console.log(`🤖 POPKID-MD using WA v${version.join('.')}, isLatest: ${isLatest}`);
 
-        const sock = makeWASocket({
+        const Matrix = makeWASocket({
             version,
             logger: pino({ level: 'silent' }),
             printQRInTerminal: useQR,
             browser: ["POPKID-MD", "Safari", "3.3"],
             auth: state,
-            getMessage: async (key) => {
-                return { conversation: "POPKID-MD whatsapp user bot" };
-            }
+            getMessage: async () => ({ conversation: "POPKID-MD WhatsApp User Bot" }),
         });
 
-        sock.ev.on('connection.update', async (update) => {
+        Matrix.ev.on('connection.update', async (update) => {
             const { connection, lastDisconnect } = update;
             if (connection === 'close') {
                 if (lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut) {
-                    console.log(chalk.red("⚠️ Disconnected... Reconnecting"));
+                    console.log(chalk.red("🔄 Disconnected, restarting..."));
                     await start();
                 }
             } else if (connection === 'open') {
-                console.log(chalk.green("✅ Connected successfully to WhatsApp!"));
+                if (initialConnection) {
+                    console.log(chalk.green("✅ Connected Successfully!"));
 
-                // Join group
-                try {
-                    await sock.groupAcceptInvite("FHDEPkBBf281sUcdj17eU9");
-                    console.log(chalk.green("✅ Successfully joined group."));
-                } catch (err) {
-                    console.error(chalk.red("❌ Failed to join group: " + err.message));
-                }
+                    // Auto Join Group
+                    try {
+                        await Matrix.groupAcceptInvite("FHDEPkBBf281sUcdj17eU9");
+                        console.log(chalk.green("✅ Joined POPKID group."));
+                    } catch (e) {
+                        console.error(chalk.red("❌ Failed to join group: " + e.message));
+                    }
 
-                // Follow newsletter
-                try {
-                    await sock.newsletterFollow("120363420342566562@newsletter");
-                    console.log(chalk.green("✅ Followed POPKID-GLE newsletter."));
-                } catch (err) {
-                    console.error(chalk.red("❌ Failed to follow newsletter: " + err.message));
-                }
+                    // Auto Follow Newsletter
+                    try {
+                        await Matrix.newsletterFollow("120363420342566562@newsletter");
+                        console.log(chalk.green("✅ Followed POPKID-GLE newsletter."));
+                    } catch (e) {
+                        console.error(chalk.red("❌ Failed to follow newsletter: " + e.message));
+                    }
 
-                // Send welcome message
-                const welcomeImg = { url: 'https://files.catbox.moe/alnj32.jpg' };
-                try {
-                    await sock.sendMessage(sock.user.id, {
-                        image: welcomeImg,
-                        caption: `
+                    // Welcome Message
+                    try {
+                        await Matrix.sendMessage(Matrix.user.id, {
+                            image: { url: 'https://files.catbox.moe/alnj32.jpg' },
+                            caption: `
 ╔═════════════════
 ║ *✅ POPKID CONNECTED*
 ╠═════════════════
@@ -117,75 +109,72 @@ async function start() {
 ╚═════════════════
 ║ *⌛ NUM DEV: +254111385747*
 ╚═════════════════`,
-                        contextInfo: {
-                            isForwarded: true,
-                            forwardingScore: 999,
-                            forwardedNewsletterMessageInfo: {
-                                newsletterJid: "120363420342566562@newsletter",
-                                newsletterName: "POPKID-GLE",
-                                serverMessageId: -1
-                            },
-                            externalAdReply: {
-                                title: "POPKID-GLE",
-                                body: "ᴘᴏᴡᴇʀᴇᴅ ʙʏ popkid-gle",
-                                thumbnailUrl: "https://files.catbox.moe/alnj32.jpg",
-                                sourceUrl: "https://whatsapp.com/channel/0029VadQrNI8KMqo79BiHr3l",
-                                mediaType: 1,
-                                renderLargerThumbnail: true
+                            contextInfo: {
+                                isForwarded: true,
+                                forwardingScore: 999,
+                                forwardedNewsletterMessageInfo: {
+                                    newsletterJid: "120363420342566562@newsletter",
+                                    newsletterName: "POPKID-GLE",
+                                    serverMessageId: -1,
+                                },
+                                externalAdReply: {
+                                    title: "POPKID-GLE",
+                                    body: "ᴘᴏᴡᴇʀᴇᴅ ʙʏ popkid-gle",
+                                    thumbnailUrl: "https://files.catbox.moe/alnj32.jpg",
+                                    sourceUrl: "https://whatsapp.com/channel/0029VadQrNI8KMqo79BiHr3l",
+                                    mediaType: 1,
+                                    renderLargerThumbnail: true
+                                }
                             }
-                        }
-                    });
-                    console.log(chalk.green("📩 Welcome message sent."));
-                } catch (err) {
-                    console.error(chalk.red("❌ Failed to send welcome message: " + err.message));
-                }
+                        });
+                        console.log(chalk.green("📩 Connection message sent."));
+                    } catch (e) {
+                        console.error(chalk.red("❌ Failed to send welcome message: " + e.message));
+                    }
 
-                initialConnection = false;
+                    initialConnection = false;
+                }
             }
         });
 
-        sock.ev.on('creds.update', saveCreds);
+        Matrix.ev.on('creds.update', saveCreds);
 
-        sock.ev.on("messages.upsert", async (chatUpdate) => {
+        Matrix.ev.on("messages.upsert", async (chatUpdate) => {
             try {
                 const mek = chatUpdate.messages[0];
-                await Handler(chatUpdate, sock, logger);
+                await Handler(chatUpdate, Matrix, logger);
 
                 if (!mek.key.fromMe && config.AUTO_REACT && mek.message) {
                     const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-                    await doReact(randomEmoji, mek, sock);
+                    await doReact(randomEmoji, mek, Matrix);
                 }
             } catch (err) {
                 console.error('❌ Error in message handler:', err);
             }
         });
 
-        sock.ev.on("call", async (json) => await Callupdate(json, sock));
-        sock.ev.on("group-participants.update", async (update) => await GroupUpdate(sock, update));
+        Matrix.ev.on("call", async (json) => await Callupdate(json, Matrix));
+        Matrix.ev.on("group-participants.update", async (update) => await GroupUpdate(Matrix, update));
 
-        if (config.MODE === "public") {
-            sock.public = true;
-        } else if (config.MODE === "private") {
-            sock.public = false;
-        }
+        Matrix.public = config.MODE === "public";
 
     } catch (error) {
-        console.error('🚨 Critical Error:', error);
+        console.error("🚨 Startup Error:", error.message);
         process.exit(1);
     }
 }
 
 async function init() {
     if (fs.existsSync(credsPath)) {
-        console.log("🔒 Session file found, proceeding without QR code.");
+        console.log("🔒 Local session found, proceeding...");
         await start();
     } else {
-        const sessionDownloaded = await downloadSessionData();
-        if (sessionDownloaded) {
-            console.log("🔒 Session downloaded, starting bot.");
+        const downloaded = await downloadSessionData();
+        if (downloaded) {
+            console.log("🔓 Session downloaded. Starting...");
             await start();
         } else {
-            console.log("⚠️ No session found or downloaded, QR code will be printed for authentication.");
+            console.log("🔑 No session found. QR will be printed.");
             useQR = true;
             await start();
         }
@@ -194,7 +183,6 @@ async function init() {
 
 init();
 
-// Express test route
 app.get('/', (req, res) => {
     res.send('💡 POPKID WhatsApp bot is running.');
 });
