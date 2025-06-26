@@ -13,7 +13,7 @@ const tiktokdl = async (m, sock) => {
       isForwarded: true,
       forwardedNewsletterMessageInfo: {
         newsletterName: "⚡ Popkid-Xmd Updates",
-        newsletterJid: "120363290715861418@newsletter"
+        newsletterJid: "120363420342566562@newsletter"
       }
     }
   }, { quoted: m });
@@ -65,7 +65,7 @@ const tiktokdl = async (m, sock) => {
           mentionedJid: [m.sender],
           forwardedNewsletterMessageInfo: {
             newsletterName: "🔥 Popkid Media Feed",
-            newsletterJid: "120363290715861418@newsletter"
+            newsletterJid: "120363420342566562@newsletter"
           }
         }
       }, { quoted: m });
