@@ -15,7 +15,7 @@ const gcEvent = async (m, Matrix) => {
       profilePic = await Matrix.profilePictureUrl(m.chat, 'image');
     } catch {}
 
-    // Dynamic menu content
+    // popkid
     let menuText;
     if (text === 'on') {
       config.WELCOME = true;
@@ -57,11 +57,11 @@ const gcEvent = async (m, Matrix) => {
           mediaType: 1,
           renderLargerThumbnail: true,
           showAdAttribution: true,
-          sourceUrl: "https://github.com/popkiddevs/POPKID-XTECH"
+          sourceUrl: "https://github.com/devpopkid/POPKID-GLE"
         },
         forwardedNewsletterMessageInfo: {
-          newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterName: "Popkid-Gle",
+          newsletterJid: "120363420342566562@newsletter",
         },
       }
     }, { quoted: m });
