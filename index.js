@@ -43,7 +43,7 @@ if (!fs.existsSync(sessionDir)) {
 }
 
 async function downloadSessionData() {
-    if (!config.SESSION_ID || !config.SESSION_ID.includes('POPKID$')) {
+    if (!config.SESSION_ID || !config.SESSION_ID.includes('Popkidmd$')) {
         console.error('❌ Invalid or missing SESSION_ID format. Expected POPKID$<pastebinId>');
         return false;
     }
