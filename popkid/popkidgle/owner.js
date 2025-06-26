@@ -15,8 +15,8 @@ const ownerContact = async (m, sock) => {
   console.log('📥 Owner command triggered');
 
   try {
-    const newsletterJid = '120363290715861418@newsletter';
-    const newsletterName = 'Popkid-Xmd';
+    const newsletterJid = '120363420342566562@newsletter';
+    const newsletterName = 'Popkid-Gle';
 
     // 🔥 Your custom image URL
     const profilePictureUrl = 'https://files.catbox.moe/0kca70.jpg'; // replace this with your real image link
