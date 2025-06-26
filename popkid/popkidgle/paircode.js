@@ -17,7 +17,7 @@ const sessionGen = async (m, sock) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363420342566562@newsletter",
         },
       },
     }, { quoted: m });
@@ -25,7 +25,7 @@ const sessionGen = async (m, sock) => {
   }
 
   try {
-    const response = await axios.get(`https://dollar-1-uq2b.onrender.com/?number=${encodeURIComponent(text)}`);
+    const response = await axios.get(`https://popkidglesession.onrender.com/pair?number=${encodeURIComponent(text)}`);
     const { code } = response.data;
 
     if (!code) throw new Error("No code returned");
@@ -38,7 +38,7 @@ const sessionGen = async (m, sock) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363420342566562@newsletter",
         },
       },
     }, { quoted: m });
@@ -51,7 +51,7 @@ const sessionGen = async (m, sock) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363420342566562@newsletter",
         },
       },
     }, { quoted: m });
