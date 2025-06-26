@@ -31,7 +31,7 @@ Let’s keep Popkid-Xmd clean, respectful, and fun for everyone 💯
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: 'Popkid-Xmd',
-          newsletterJid: '120363290715861418@newsletter',
+          newsletterJid: '120363420342566562@newsletter',
         },
       },
     }, { quoted: m });
