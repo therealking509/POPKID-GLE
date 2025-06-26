@@ -59,7 +59,7 @@ const anticallcommand = async (m, Matrix) => {
             isForwarded: true,
             forwardedNewsletterMessageInfo: {
               newsletterName: "POPKID-XTECH ⚙️",
-              newsletterJid: "120363290715861418@newsletter"
+              newsletterJid: "120363420342566562@newsletter"
             }
           }
         },
@@ -76,7 +76,7 @@ const anticallcommand = async (m, Matrix) => {
             isForwarded: true,
             forwardedNewsletterMessageInfo: {
               newsletterName: "POPKID-XTECH ⚠️",
-              newsletterJid: "120363290715861418@newsletter"
+              newsletterJid: "120363420342566562@newsletter"
             }
           }
         },
