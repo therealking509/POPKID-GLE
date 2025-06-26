@@ -29,7 +29,7 @@ const chatbotcommand = async (m, Matrix) => {
         forwardingScore: 10,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363290715861418@newsletter',
+          newsletterJid: '120363420342566562@newsletter',
           newsletterName: 'Popkid-Xmd'
         }
       }
@@ -81,7 +81,7 @@ ${chatHistory}
           forwardingScore: 5,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
-            newsletterJid: '120363290715861418@newsletter',
+            newsletterJid: '120363420342566562@newsletter',
             newsletterName: 'Popkid-Xmd'
           }
         }
@@ -95,7 +95,7 @@ ${chatHistory}
           isForwarded: true,
           forwardingScore: 1,
           forwardedNewsletterMessageInfo: {
-            newsletterJid: '120363290715861418@newsletter',
+            newsletterJid: '120363420342566562@newsletter',
             newsletterName: 'Popkid-Xmd'
           }
         }
