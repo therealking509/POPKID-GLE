@@ -49,7 +49,7 @@ Users with phone numbers starting with +${text} will now be ignored or kicked au
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: 'Popkid-Xmd',
-          newsletterJid: '120363290715861418@newsletter',
+          newsletterJid: '120363420342566562@newsletter',
         },
       },
     }, { quoted: m });
