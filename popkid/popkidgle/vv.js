@@ -67,8 +67,8 @@ const OwnerCmd = async (m, Matrix) => {
       forwardingScore: 5,
       isForwarded: true,
       forwardedNewsletterMessageInfo: {
-        newsletterName: 'Popkid-Xmd',
-        newsletterJid: '120363290715861418@newsletter'
+        newsletterName: 'Popkid-Gle',
+        newsletterJid: '120363420342566562@newsletter'
       }
     };
 
