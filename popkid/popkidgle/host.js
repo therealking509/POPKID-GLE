@@ -62,7 +62,7 @@ const hostCommand = async (m, Matrix) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363420342566562@newsletter",
         },
         externalAdReply: {
           title: "Popkid-Xmd Bot",
@@ -84,7 +84,7 @@ const hostCommand = async (m, Matrix) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363420342566562@newsletter",
         }
       }
     }, { quoted: m });
