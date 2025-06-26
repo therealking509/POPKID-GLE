@@ -1,1 +1,200 @@
-const _0x3ad080=_0x46de,_0x51df97=_0x5d8e;(function(_0x507510,_0x4eecd4){const _0x29e39f=_0x5d8e,_0x4f0781=_0x46de,_0x414e21=_0x507510();while(!![]){try{const _0x57ba55=parseInt(_0x4f0781(0xc4))/0x1*(-parseInt(_0x4f0781(0x96))/0x2)+-parseInt(_0x29e39f(0xa1))/0x3*(parseInt(_0x4f0781(0xc9))/0x4)+parseInt(_0x29e39f(0xb6))/0x5+-parseInt(_0x29e39f(0xa8))/0x6+parseInt(_0x29e39f(0x92))/0x7*(parseInt(_0x4f0781(0xd0))/0x8)+parseInt(_0x29e39f(0xbb))/0x9+-parseInt(_0x4f0781(0xc2))/0xa*(-parseInt(_0x29e39f(0x88))/0xb);if(_0x57ba55===_0x4eecd4)break;else _0x414e21['push'](_0x414e21['shift']());}catch(_0x223518){_0x414e21['push'](_0x414e21['shift']());}}}(_0x1057,0x62333));import _0x55b527 from'dotenv';_0x55b527[_0x51df97(0x8e)]();import{makeWASocket,fetchLatestBaileysVersion,DisconnectReason,useMultiFileAuthState}from'@whiskeysockets/baileys';import{Handler,Callupdate,GroupUpdate}from'./popkid/popkidd/popkiddd.js';import _0x356511 from'express';function _0x46de(_0x521b4d,_0x5af77f){const _0x105705=_0x1057();return _0x46de=function(_0x46de8c,_0x2dd1f0){_0x46de8c=_0x46de8c-0x70;let _0x5ea1d5=_0x105705[_0x46de8c];return _0x5ea1d5;},_0x46de(_0x521b4d,_0x5af77f);}import _0x520615 from'pino';import _0x4de648 from'fs';import _0x595192 from'node-cache';import _0x19dc8e from'path';import _0x220296 from'chalk';import _0x4514f0 from'axios';import _0x36c434 from'./config.cjs';function _0x5d8e(_0x521b4d,_0x5af77f){const _0x105705=_0x1057();return _0x5d8e=function(_0x46de8c,_0x2dd1f0){_0x46de8c=_0x46de8c-0x70;let _0x5ea1d5=_0x105705[_0x46de8c];if(_0x5d8e['rnACac']===undefined){var _0x18fa0f=function(_0x5d8e4a){const _0x491157='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x497702='',_0x3ae96e='';for(let _0x48952a=0x0,_0x139450,_0x4b8fda,_0x55b527=0x0;_0x4b8fda=_0x5d8e4a['charAt'](_0x55b527++);~_0x4b8fda&&(_0x139450=_0x48952a%0x4?_0x139450*0x40+_0x4b8fda:_0x4b8fda,_0x48952a++%0x4)?_0x497702+=String['fromCharCode'](0xff&_0x139450>>(-0x2*_0x48952a&0x6)):0x0){_0x4b8fda=_0x491157['indexOf'](_0x4b8fda);}for(let _0x356511=0x0,_0x520615=_0x497702['length'];_0x356511<_0x520615;_0x356511++){_0x3ae96e+='%'+('00'+_0x497702['charCodeAt'](_0x356511)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x3ae96e);};_0x5d8e['uQWGqX']=_0x18fa0f,_0x521b4d=arguments,_0x5d8e['rnACac']=!![];}const _0x4c8af9=_0x105705[0x0],_0x3bd46c=_0x46de8c+_0x4c8af9,_0x29cc4e=_0x521b4d[_0x3bd46c];return!_0x29cc4e?(_0x5ea1d5=_0x5d8e['uQWGqX'](_0x5ea1d5),_0x521b4d[_0x3bd46c]=_0x5ea1d5):_0x5ea1d5=_0x29cc4e,_0x5ea1d5;},_0x5d8e(_0x521b4d,_0x5af77f);}import _0x33efdc from'./lib/autoreact.cjs';const {emojis,doReact}=_0x33efdc,app=_0x356511(),PORT=process[_0x51df97(0x93)][_0x3ad080(0x7a)]||0xbb8;let useQR=![],initialConnection=!![];const logger=_0x520615({'level':_0x3ad080(0x83),'timestamp':()=>_0x3ad080(0xd8)+new Date()[_0x51df97(0xd4)]()+'\x22'})[_0x51df97(0xc6)]({}),msgRetryCounterCache=new _0x595192(),__filename=new URL(import.meta[_0x3ad080(0x9c)])[_0x3ad080(0xcb)],__dirname=_0x19dc8e[_0x51df97(0x7b)](__filename),sessionDir=_0x19dc8e['join'](__dirname,_0x3ad080(0x81)),credsPath=_0x19dc8e[_0x51df97(0xa9)](sessionDir,'creds.json');!_0x4de648[_0x3ad080(0xc7)](sessionDir)&&_0x4de648[_0x51df97(0xa3)](sessionDir,{'recursive':!![]});async function downloadSessionData(){const _0x56112e=_0x51df97,_0x5d5212=_0x3ad080;if(!_0x36c434['SESSION_ID']||!_0x36c434[_0x5d5212(0xb8)]['includes'](_0x5d5212(0xb1)))return console['error'](_0x56112e(0xc8)),![];const _0x231770=_0x36c434[_0x5d5212(0xb8)][_0x56112e(0x73)](_0x56112e(0xd3))[0x1],_0x46c866=_0x5d5212(0x94)+_0x231770;try{const _0x32b963=await _0x4514f0[_0x56112e(0x77)](_0x46c866),_0x3d4305=typeof _0x32b963[_0x5d5212(0xa5)]===_0x5d5212(0x98)?_0x32b963[_0x56112e(0xbc)]:JSON[_0x56112e(0xb9)](_0x32b963[_0x56112e(0xbc)]);return await _0x4de648[_0x56112e(0xae)][_0x5d5212(0xa7)](credsPath,_0x3d4305),console[_0x5d5212(0xbe)]('🔒\x20Session\x20Successfully\x20Loaded!!'),!![];}catch(_0x54e970){return console[_0x56112e(0x9b)](_0x56112e(0xbf),_0x54e970[_0x5d5212(0x85)]),![];}}async function start(){const _0x3d2a53=_0x51df97,_0x214d6c=_0x3ad080;try{const {state:_0x2b87cf,saveCreds:_0x52f94b}=await useMultiFileAuthState(sessionDir),{version:_0x175aa0,isLatest:_0x24f86b}=await fetchLatestBaileysVersion();console[_0x214d6c(0xbe)](_0x214d6c(0xb4)+_0x175aa0['join']('.')+_0x3d2a53(0xaa)+_0x24f86b);const _0x517fe7=makeWASocket({'version':_0x175aa0,'logger':_0x520615({'level':_0x3d2a53(0x90)}),'printQRInTerminal':useQR,'browser':[_0x3d2a53(0x86),'Safari',_0x3d2a53(0x7c)],'auth':_0x2b87cf,'getMessage':async()=>({'conversation':_0x214d6c(0x70)})});_0x517fe7['ev']['on'](_0x3d2a53(0x87),async _0x2da0e1=>{const _0x4dfdf6=_0x3d2a53,_0x2622e8=_0x214d6c,{connection:_0x30a9ff,lastDisconnect:_0x1c7ccd}=_0x2da0e1;if(_0x30a9ff==='close')_0x1c7ccd?.[_0x2622e8(0x79)]?.['output']?.['statusCode']!==DisconnectReason[_0x2622e8(0xa0)]&&(console[_0x4dfdf6(0xb2)](_0x220296[_0x4dfdf6(0x71)](_0x2622e8(0xd2))),await start());else{if(_0x30a9ff===_0x4dfdf6(0x74)){if(initialConnection){console['log'](_0x220296['green'](_0x4dfdf6(0xd7)));try{await _0x517fe7[_0x2622e8(0xc0)](_0x2622e8(0x7f)),console[_0x2622e8(0xbe)](_0x220296[_0x2622e8(0x80)](_0x4dfdf6(0x7e)));}catch(_0x1fefd7){console[_0x2622e8(0x79)](_0x220296[_0x4dfdf6(0x71)](_0x4dfdf6(0xa6)+_0x1fefd7[_0x2622e8(0x85)]));}try{await _0x517fe7[_0x2622e8(0x78)](_0x2622e8(0xad)),console[_0x2622e8(0xbe)](_0x220296['green']('✅\x20Followed\x20POPKID-GLE\x20newsletter.'));}catch(_0x31cf11){console['error'](_0x220296[_0x2622e8(0x8c)]('❌\x20Failed\x20to\x20follow\x20newsletter:\x20'+_0x31cf11[_0x2622e8(0x85)]));}try{await _0x517fe7[_0x2622e8(0xaf)](_0x517fe7[_0x2622e8(0xd5)]['id'],{'image':{'url':_0x4dfdf6(0x84)},'caption':_0x2622e8(0xd1)+_0x36c434[_0x2622e8(0x72)]+_0x2622e8(0xac)+(process[_0x2622e8(0xcd)][_0x4dfdf6(0x89)]||_0x4dfdf6(0xb7))+_0x2622e8(0x91)+_0x36c434['MODE'][_0x2622e8(0xd9)]()+_0x4dfdf6(0x9f),'contextInfo':{'isForwarded':!![],'forwardingScore':0x3e7,'forwardedNewsletterMessageInfo':{'newsletterJid':_0x2622e8(0xad),'newsletterName':_0x2622e8(0xd6),'serverMessageId':-0x1},'externalAdReply':{'title':_0x4dfdf6(0x9d),'body':_0x2622e8(0xa2),'thumbnailUrl':'https://files.catbox.moe/shuljc.jpg','sourceUrl':_0x2622e8(0xcc),'mediaType':0x1,'renderLargerThumbnail':!![]}}}),console[_0x2622e8(0xbe)](_0x220296[_0x2622e8(0x80)](_0x2622e8(0xbd)));}catch(_0x32e76f){console[_0x4dfdf6(0x9b)](_0x220296[_0x2622e8(0x8c)](_0x2622e8(0xcf)+_0x32e76f[_0x4dfdf6(0x8a)]));}initialConnection=![];}}}}),_0x517fe7['ev']['on'](_0x214d6c(0x95),_0x52f94b),_0x517fe7['ev']['on'](_0x3d2a53(0xce),async _0x38d644=>{const _0x2a8ad5=_0x214d6c,_0x14d078=_0x3d2a53;try{const _0x184b53=_0x38d644[_0x14d078(0xc1)][0x0];await Handler(_0x38d644,_0x517fe7,logger);if(!_0x184b53[_0x2a8ad5(0xb0)][_0x14d078(0x9e)]&&_0x36c434[_0x2a8ad5(0xba)]&&_0x184b53[_0x14d078(0x8a)]){const _0x457cf1=emojis[Math[_0x14d078(0x99)](Math[_0x14d078(0x76)]()*emojis['length'])];await doReact(_0x457cf1,_0x184b53,_0x517fe7);}}catch(_0x3210b8){console[_0x2a8ad5(0x79)](_0x14d078(0x9a),_0x3210b8);}}),_0x517fe7['ev']['on'](_0x214d6c(0xca),async _0x3b0a96=>await Callupdate(_0x3b0a96,_0x517fe7)),_0x517fe7['ev']['on']('group-participants.update',async _0x38827a=>await GroupUpdate(_0x517fe7,_0x38827a)),_0x517fe7[_0x3d2a53(0x8b)]=_0x36c434[_0x3d2a53(0x7d)]==='public';}catch(_0x4e25ad){console[_0x3d2a53(0x9b)](_0x3d2a53(0x75),_0x4e25ad[_0x214d6c(0x85)]),process[_0x3d2a53(0xab)](0x1);}}async function init(){const _0x4ac132=_0x3ad080,_0x124130=_0x51df97;if(_0x4de648['existsSync'](credsPath))console[_0x124130(0xb2)](_0x4ac132(0xb3)),await start();else{const _0xc0ebec=await downloadSessionData();_0xc0ebec?(console['log']('🔓\x20Session\x20downloaded.\x20Starting...'),await start()):(console[_0x4ac132(0xbe)]('🔑\x20No\x20session\x20found.\x20QR\x20will\x20be\x20printed.'),useQR=!![],await start());}}init(),app[_0x51df97(0x77)]('/',(_0x14c427,_0x194dbc)=>{const _0x11dc62=_0x51df97,_0x492628=_0x3ad080;_0x194dbc[_0x492628(0x8d)](_0x11dc62(0xc5));}),app['listen'](PORT,()=>{const _0x2f3e52=_0x3ad080;console[_0x2f3e52(0xbe)]('🌐\x20Express\x20server\x20running\x20on\x20port\x20'+PORT);});function _0x1057(){const _0x17131f=['CMvK','PREFIX','C3bSAxq','B3bLBG','8j+AQcbtDgfYDhvWievYCM9YoG','CMfUzg9T','z2v0','newsletterFollow','error','PORT','zgLYBMfTzq','mY4Z','tu9erq','4PYfiePVAw5Lzcbqt1blsuqGz3jVDxaU','FHDEPkBBf281sUcdj17eU9','green','session','2988820CDOpmh','trace','Ahr0Chm6lY9MAwXLCY5JyxrIB3GUBw9Ll3nODwXQyY5QCgC','message','ue9qs0Lelu1e','y29UBMvJDgLVBI51CgrHDgu','mZC0uw5jAxnv','revqte9ztuvovf9qtefurK9stq','BwvZC2fNzq','ChvIBgLJ','red','send','y29UzMLN','ogLoD2LHzq','C2LSzw50','\x0a║\x20🧭\x20*BOT\x20MODE:*\x20','mtyYmtyYn3nuCwDpsq','zw52','https://pastebin.com/raw/','creds.update','6VQWYBE','3050586DXwrpX','string','zMXVB3i','4P2mievYCM9YigLUig1LC3nHz2uGAgfUzgXLCJO','zxjYB3i','url','ue9qs0LeluDmrq','zNjVBu1L','cUkvMUkvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKa','loggedOut','m05kDuPetq','ᴘᴏᴡᴇʀᴇᴅ\x20ʙʏ\x20popkid-gle','BwTKAxjtEw5J','2481093ebevMU','data','4P2miezHAwXLzcb0BYbQB2LUigDYB3vWoIa','writeFile','mZa1mdu4nKryD3jWwa','AM9PBG','lcbPC0XHDgvZDdOG','zxHPDa','\x0a║\x20🌐\x20*DEPLOYED\x20ON:*\x20','120363420342566562@newsletter','ChjVBwLZzxm','sendMessage','key','Popkidmd$','Bg9N','🔒\x20Local\x20session\x20found,\x20proceeding...','🤖\x20POPKID-MD\x20using\x20WA\x20v','3NJuJDM','mJK4odGYmenet3bTAa','uMvUzgvY','SESSION_ID','C3rYAw5NAwz5','AUTO_REACT','mJq4mta5m2vIzxznvq','zgf0yq','📩\x20Connection\x20message\x20sent.','log','4P2miezHAwXLzcb0BYbKB3DUBg9HzcbZzxnZAw9UoG','groupAcceptInvite','BwvZC2fNzxm','267290InPVUW','mtyXodiXq1DKB2vj','161821CWdoeI','8j+sOsbqt1blsuqGv2HHDhnbChaGyM90igLZihj1BM5PBMCU','y2HPBgq','existsSync','4P2mieLUDMfSAwqGu0vtu0LptL9jrcbMB3jTyxqUifvZztOGug9WA2LKBwqKphbHC3rLyMLUswq+','2471068hgipGn','call','pathname','https://whatsapp.com/channel/0029VbB6d0KKAwEdvcgqrH26','env','BwvZC2fNzxmUDxbZzxj0','❌\x20Failed\x20to\x20send\x20welcome\x20message:\x20','8iNwiae','\x0a╔═══════════════════════\x0a║\x20✅\x20*POPKID\x20CONNECTED!*\x0a╠═══════════════════════\x0a║\x20⚡\x20*DEVELOPER:*\x20POPKID\x20GLE\x0a║\x20📞\x20*DEV\x20NUMBER:*\x20+254111385747\x0a╠═══════════════════════\x0a║\x20🔗\x20*PREFIX:*\x20','🔄\x20Disconnected,\x20restarting...','ug9WA2LKBwqK','Dg9ku09o','user','POPKID-GLE','4PYfienVBM5Ly3rLzcbtDwnJzxnZzNvSBhKH',',\x22time\x22:\x22','toUpperCase','POPKID-MD\x20WhatsApp\x20User\x20Bot'];_0x1057=function(){return _0x17131f;};return _0x1057();}
+//const _0x3ad080=_0x46de,_0x51df97=_0x5d8e;(function(_0x507510,_0x4eecd4){const _0x29e39f=_0x5d8e,_0x4f0781=_0x46de,_0x414e21=_0x507510();while(!![]){try{const _0x57ba55=parseInt(_0x4f0781(0xc4))/0x1*(-parseInt(_0x4f0781(0x96))/0x2)+-parseInt(_0x29e39f(0xa1))/0x3*(parseInt(_0x4f0781(0xc9))/0x4)+parseInt(_0x29e39f(0xb6))/0x5+-parseInt(_0x29e39f(0xa8))/0x6+parseInt(_0x29e39f(0x92))/0x7*(parseInt(_0x4f0781(0xd0))/0x8)+parseInt(_0x29e39f(0xbb))/0x9+-parseInt(_0x4f0781(0xc2))/0xa*(-parseInt(_0x29e39f(0x88))/0xb);if(_0x57ba55===_0x4eecd4)break;else _0x414e21['push'](_0x414e21['shift']());}catch(_0x223518){_0x414e21['push'](_0x414e21['shift']());}}}(_0x1057,0x62333));import _0x55b527 from'dotenv';_0x55b527[_0x51df97(0x8e)]();import{makeWASocket,fetchLatestBaileysVersion,DisconnectReason,useMultiFileAuthState}from'@whiskeysockets/baileys';import{Handler,Callupdate,GroupUpdate}from'./popkid/popkidd/popkiddd.js';import _0x356511 from'express';function _0x46de(_0x521b4d,_0x5af77f){const _0x105705=_0x1057();return _0x46de=function(_0x46de8c,_0x2dd1f0){_0x46de8c=_0x46de8c-0x70;let _0x5ea1d5=_0x105705[_0x46de8c];return _0x5ea1d5;},_0x46de(_0x521b4d,_0x5af77f);}import _0x520615 from'pino';import _0x4de648 from'fs';import _0x595192 from'node-cache';import _0x19dc8e from'path';import _0x220296 from'chalk';import _0x4514f0 from'axios';import _0x36c434 from'./config.cjs';function _0x5d8e(_0x521b4d,_0x5af77f){const _0x105705=_0x1057();return _0x5d8e=function(_0x46de8c,_0x2dd1f0){_0x46de8c=_0x46de8c-0x70;let _0x5ea1d5=_0x105705[_0x46de8c];if(_0x5d8e['rnACac']===undefined){var _0x18fa0f=function(_0x5d8e4a){const _0x491157='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789+/=';let _0x497702='',_0x3ae96e='';for(let _0x48952a=0x0,_0x139450,_0x4b8fda,_0x55b527=0x0;_0x4b8fda=_0x5d8e4a['charAt'](_0x55b527++);~_0x4b8fda&&(_0x139450=_0x48952a%0x4?_0x139450*0x40+_0x4b8fda:_0x4b8fda,_0x48952a++%0x4)?_0x497702+=String['fromCharCode'](0xff&_0x139450>>(-0x2*_0x48952a&0x6)):0x0){_0x4b8fda=_0x491157['indexOf'](_0x4b8fda);}for(let _0x356511=0x0,_0x520615=_0x497702['length'];_0x356511<_0x520615;_0x356511++){_0x3ae96e+='%'+('00'+_0x497702['charCodeAt'](_0x356511)['toString'](0x10))['slice'](-0x2);}return decodeURIComponent(_0x3ae96e);};_0x5d8e['uQWGqX']=_0x18fa0f,_0x521b4d=arguments,_0x5d8e['rnACac']=!![];}const _0x4c8af9=_0x105705[0x0],_0x3bd46c=_0x46de8c+_0x4c8af9,_0x29cc4e=_0x521b4d[_0x3bd46c];return!_0x29cc4e?(_0x5ea1d5=_0x5d8e['uQWGqX'](_0x5ea1d5),_0x521b4d[_0x3bd46c]=_0x5ea1d5):_0x5ea1d5=_0x29cc4e,_0x5ea1d5;},_0x5d8e(_0x521b4d,_0x5af77f);}import _0x33efdc from'./lib/autoreact.cjs';const {emojis,doReact}=_0x33efdc,app=_0x356511(),PORT=process[_0x51df97(0x93)][_0x3ad080(0x7a)]||0xbb8;let useQR=![],initialConnection=!![];const logger=_0x520615({'level':_0x3ad080(0x83),'timestamp':()=>_0x3ad080(0xd8)+new Date()[_0x51df97(0xd4)]()+'\x22'})[_0x51df97(0xc6)]({}),msgRetryCounterCache=new _0x595192(),__filename=new URL(import.meta[_0x3ad080(0x9c)])[_0x3ad080(0xcb)],__dirname=_0x19dc8e[_0x51df97(0x7b)](__filename),sessionDir=_0x19dc8e['join'](__dirname,_0x3ad080(0x81)),credsPath=_0x19dc8e[_0x51df97(0xa9)](sessionDir,'creds.json');!_0x4de648[_0x3ad080(0xc7)](sessionDir)&&_0x4de648[_0x51df97(0xa3)](sessionDir,{'recursive':!![]});async function downloadSessionData(){const _0x56112e=_0x51df97,_0x5d5212=_0x3ad080;if(!_0x36c434['SESSION_ID']||!_0x36c434[_0x5d5212(0xb8)]['includes'](_0x5d5212(0xb1)))return console['error'](_0x56112e(0xc8)),![];const _0x231770=_0x36c434[_0x5d5212(0xb8)][_0x56112e(0x73)](_0x56112e(0xd3))[0x1],_0x46c866=_0x5d5212(0x94)+_0x231770;try{const _0x32b963=await _0x4514f0[_0x56112e(0x77)](_0x46c866),_0x3d4305=typeof _0x32b963[_0x5d5212(0xa5)]===_0x5d5212(0x98)?_0x32b963[_0x56112e(0xbc)]:JSON[_0x56112e(0xb9)](_0x32b963[_0x56112e(0xbc)]);return await _0x4de648[_0x56112e(0xae)][_0x5d5212(0xa7)](credsPath,_0x3d4305),console[_0x5d5212(0xbe)]('🔒\x20Session\x20Successfully\x20Loaded!!'),!![];}catch(_0x54e970){return console[_0x56112e(0x9b)](_0x56112e(0xbf),_0x54e970[_0x5d5212(0x85)]),![];}}async function start(){const _0x3d2a53=_0x51df97,_0x214d6c=_0x3ad080;try{const {state:_0x2b87cf,saveCreds:_0x52f94b}=await useMultiFileAuthState(sessionDir),{version:_0x175aa0,isLatest:_0x24f86b}=await fetchLatestBaileysVersion();console[_0x214d6c(0xbe)](_0x214d6c(0xb4)+_0x175aa0['join']('.')+_0x3d2a53(0xaa)+_0x24f86b);const _0x517fe7=makeWASocket({'version':_0x175aa0,'logger':_0x520615({'level':_0x3d2a53(0x90)}),'printQRInTerminal':useQR,'browser':[_0x3d2a53(0x86),'Safari',_0x3d2a53(0x7c)],'auth':_0x2b87cf,'getMessage':async()=>({'conversation':_0x214d6c(0x70)})});_0x517fe7['ev']['on'](_0x3d2a53(0x87),async _0x2da0e1=>{const _0x4dfdf6=_0x3d2a53,_0x2622e8=_0x214d6c,{connection:_0x30a9ff,lastDisconnect:_0x1c7ccd}=_0x2da0e1;if(_0x30a9ff==='close')_0x1c7ccd?.[_0x2622e8(0x79)]?.['output']?.['statusCode']!==DisconnectReason[_0x2622e8(0xa0)]&&(console[_0x4dfdf6(0xb2)](_0x220296[_0x4dfdf6(0x71)](_0x2622e8(0xd2))),await start());else{if(_0x30a9ff===_0x4dfdf6(0x74)){if(initialConnection){console['log'](_0x220296['green'](_0x4dfdf6(0xd7)));try{await _0x517fe7[_0x2622e8(0xc0)](_0x2622e8(0x7f)),console[_0x2622e8(0xbe)](_0x220296[_0x2622e8(0x80)](_0x4dfdf6(0x7e)));}catch(_0x1fefd7){console[_0x2622e8(0x79)](_0x220296[_0x4dfdf6(0x71)](_0x4dfdf6(0xa6)+_0x1fefd7[_0x2622e8(0x85)]));}try{await _0x517fe7[_0x2622e8(0x78)](_0x2622e8(0xad)),console[_0x2622e8(0xbe)](_0x220296['green']('✅\x20Followed\x20POPKID-GLE\x20newsletter.'));}catch(_0x31cf11){console['error'](_0x220296[_0x2622e8(0x8c)]('❌\x20Failed\x20to\x20follow\x20newsletter:\x20'+_0x31cf11[_0x2622e8(0x85)]));}try{await _0x517fe7[_0x2622e8(0xaf)](_0x517fe7[_0x2622e8(0xd5)]['id'],{'image':{'url':_0x4dfdf6(0x84)},'caption':_0x2622e8(0xd1)+_0x36c434[_0x2622e8(0x72)]+_0x2622e8(0xac)+(process[_0x2622e8(0xcd)][_0x4dfdf6(0x89)]||_0x4dfdf6(0xb7))+_0x2622e8(0x91)+_0x36c434['MODE'][_0x2622e8(0xd9)]()+_0x4dfdf6(0x9f),'contextInfo':{'isForwarded':!![],'forwardingScore':0x3e7,'forwardedNewsletterMessageInfo':{'newsletterJid':_0x2622e8(0xad),'newsletterName':_0x2622e8(0xd6),'serverMessageId':-0x1},'externalAdReply':{'title':_0x4dfdf6(0x9d),'body':_0x2622e8(0xa2),'thumbnailUrl':'https://files.catbox.moe/shuljc.jpg','sourceUrl':_0x2622e8(0xcc),'mediaType':0x1,'renderLargerThumbnail':!![]}}}),console[_0x2622e8(0xbe)](_0x220296[_0x2622e8(0x80)](_0x2622e8(0xbd)));}catch(_0x32e76f){console[_0x4dfdf6(0x9b)](_0x220296[_0x2622e8(0x8c)](_0x2622e8(0xcf)+_0x32e76f[_0x4dfdf6(0x8a)]));}initialConnection=![];}}}}),_0x517fe7['ev']['on'](_0x214d6c(0x95),_0x52f94b),_0x517fe7['ev']['on'](_0x3d2a53(0xce),async _0x38d644=>{const _0x2a8ad5=_0x214d6c,_0x14d078=_0x3d2a53;try{const _0x184b53=_0x38d644[_0x14d078(0xc1)][0x0];await Handler(_0x38d644,_0x517fe7,logger);if(!_0x184b53[_0x2a8ad5(0xb0)][_0x14d078(0x9e)]&&_0x36c434[_0x2a8ad5(0xba)]&&_0x184b53[_0x14d078(0x8a)]){const _0x457cf1=emojis[Math[_0x14d078(0x99)](Math[_0x14d078(0x76)]()*emojis['length'])];await doReact(_0x457cf1,_0x184b53,_0x517fe7);}}catch(_0x3210b8){console[_0x2a8ad5(0x79)](_0x14d078(0x9a),_0x3210b8);}}),_0x517fe7['ev']['on'](_0x214d6c(0xca),async _0x3b0a96=>await Callupdate(_0x3b0a96,_0x517fe7)),_0x517fe7['ev']['on']('group-participants.update',async _0x38827a=>await GroupUpdate(_0x517fe7,_0x38827a)),_0x517fe7[_0x3d2a53(0x8b)]=_0x36c434[_0x3d2a53(0x7d)]==='public';}catch(_0x4e25ad){console[_0x3d2a53(0x9b)](_0x3d2a53(0x75),_0x4e25ad[_0x214d6c(0x85)]),process[_0x3d2a53(0xab)](0x1);}}async function init(){const _0x4ac132=_0x3ad080,_0x124130=_0x51df97;if(_0x4de648['existsSync'](credsPath))console[_0x124130(0xb2)](_0x4ac132(0xb3)),await start();else{const _0xc0ebec=await downloadSessionData();_0xc0ebec?(console['log']('🔓\x20Session\x20downloaded.\x20Starting...'),await start()):(console[_0x4ac132(0xbe)]('🔑\x20No\x20session\x20found.\x20QR\x20will\x20be\x20printed.'),useQR=!![],await start());}}init(),app[_0x51df97(0x77)]('/',(_0x14c427,_0x194dbc)=>{const _0x11dc62=_0x51df97,_0x492628=_0x3ad080;_0x194dbc[_0x492628(0x8d)](_0x11dc62(0xc5));}),app['listen'](PORT,()=>{const _0x2f3e52=_0x3ad080;console[_0x2f3e52(0xbe)]('🌐\x20Express\x20server\x20running\x20on\x20port\x20'+PORT);});function _0x1057(){const _0x17131f=['CMvK','PREFIX','C3bSAxq','B3bLBG','8j+AQcbtDgfYDhvWievYCM9YoG','CMfUzg9T','z2v0','newsletterFollow','error','PORT','zgLYBMfTzq','mY4Z','tu9erq','4PYfiePVAw5Lzcbqt1blsuqGz3jVDxaU','FHDEPkBBf281sUcdj17eU9','green','session','2988820CDOpmh','trace','Ahr0Chm6lY9MAwXLCY5JyxrIB3GUBw9Ll3nODwXQyY5QCgC','message','ue9qs0Lelu1e','y29UBMvJDgLVBI51CgrHDgu','mZC0uw5jAxnv','revqte9ztuvovf9qtefurK9stq','BwvZC2fNzq','ChvIBgLJ','red','send','y29UzMLN','ogLoD2LHzq','C2LSzw50','\x0a║\x20🧭\x20*BOT\x20MODE:*\x20','mtyYmtyYn3nuCwDpsq','zw52','https://pastebin.com/raw/','creds.update','6VQWYBE','3050586DXwrpX','string','zMXVB3i','4P2mievYCM9YigLUig1LC3nHz2uGAgfUzgXLCJO','zxjYB3i','url','ue9qs0LeluDmrq','zNjVBu1L','cUkvMUkvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKokvKa','loggedOut','m05kDuPetq','ᴘᴏᴡᴇʀᴇᴅ\x20ʙʏ\x20popkid-gle','BwTKAxjtEw5J','2481093ebevMU','data','4P2miezHAwXLzcb0BYbQB2LUigDYB3vWoIa','writeFile','mZa1mdu4nKryD3jWwa','AM9PBG','lcbPC0XHDgvZDdOG','zxHPDa','\x0a║\x20🌐\x20*DEPLOYED\x20ON:*\x20','120363420342566562@newsletter','ChjVBwLZzxm','sendMessage','key','Popkidmd$','Bg9N','🔒\x20Local\x20session\x20found,\x20proceeding...','🤖\x20POPKID-MD\x20using\x20WA\x20v','3NJuJDM','mJK4odGYmenet3bTAa','uMvUzgvY','SESSION_ID','C3rYAw5NAwz5','AUTO_REACT','mJq4mta5m2vIzxznvq','zgf0yq','📩\x20Connection\x20message\x20sent.','log','4P2miezHAwXLzcb0BYbKB3DUBg9HzcbZzxnZAw9UoG','groupAcceptInvite','BwvZC2fNzxm','267290InPVUW','mtyXodiXq1DKB2vj','161821CWdoeI','8j+sOsbqt1blsuqGv2HHDhnbChaGyM90igLZihj1BM5PBMCU','y2HPBgq','existsSync','4P2mieLUDMfSAwqGu0vtu0LptL9jrcbMB3jTyxqUifvZztOGug9WA2LKBwqKphbHC3rLyMLUswq+','2471068hgipGn','call','pathname','https://whatsapp.com/channel/0029VbB6d0KKAwEdvcgqrH26','env','BwvZC2fNzxmUDxbZzxj0','❌\x20Failed\x20to\x20send\x20welcome\x20message:\x20','8iNwiae','\x0a╔═══════════════════════\x0a║\x20✅\x20*POPKID\x20CONNECTED!*\x0a╠═══════════════════════\x0a║\x20⚡\x20*DEVELOPER:*\x20POPKID\x20GLE\x0a║\x20📞\x20*DEV\x20NUMBER:*\x20+254111385747\x0a╠═══════════════════════\x0a║\x20🔗\x20*PREFIX:*\x20','🔄\x20Disconnected,\x20restarting...','ug9WA2LKBwqK','Dg9ku09o','user','POPKID-GLE','4PYfienVBM5Ly3rLzcbtDwnJzxnZzNvSBhKH',',\x22time\x22:\x22','toUpperCase','POPKID-MD\x20WhatsApp\x20User\x20Bot'];_0x1057=function(){return _0x17131f;};return _0x1057();}
+
+import dotenv from 'dotenv';
+dotenv.config();
+import { makeWASocket, fetchLatestBaileysVersion, DisconnectReason, useMultiFileAuthState } from '@whiskeysockets/baileys';
+import { Handler, Callupdate, GroupUpdate } from './popkid/popkidd/popkiddd.js';
+import express from 'express';
+import pino from 'pino';
+import fs from 'fs';
+import 'node-cache';
+import path from 'path';
+import chalk from 'chalk';
+import 'axios';
+import config from './config.cjs';
+import autoreact from './lib/autoreact.cjs';
+import { fileURLToPath } from 'url';
+import { File } from 'megajs';
+
+const { emojis, doReact } = autoreact;
+const app = express();
+let useQR = false;
+let initialConnection = true;
+const PORT = process.env.PORT || 3000;
+
+const MAIN_LOGGER = pino({
+  timestamp: () => `,"time":"${new Date().toJSON()}"`
+});
+const logger = MAIN_LOGGER.child({});
+logger.level = "trace";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const sessionDir = path.join(__dirname, "session");
+const credsPath = path.join(sessionDir, "creds.json");
+
+if (!fs.existsSync(sessionDir)) {
+  fs.mkdirSync(sessionDir, { recursive: true });
+}
+
+async function downloadSessionData() {
+  console.log("Debugging SESSION_ID:", config.SESSION_ID);
+  if (!config.SESSION_ID) {
+    console.error("❌ Please add your session to SESSION_ID env !!");
+    return false;
+  }
+  const sessionData = config.SESSION_ID.split("POPKID;;;")[1];
+  if (!sessionData || !sessionData.includes('#')) {
+    console.error("❌ Invalid SESSION_ID format! It must contain both file ID and decryption key.");
+    return false;
+  }
+  const [fileId, fileKey] = sessionData.split('#');
+  try {
+    console.log("🔄 Downloading Session...");
+    const megaFile = File.fromURL(`https://mega.nz/file/${fileId}#${fileKey}`);
+    const downloaded = await new Promise((res, rej) => {
+      megaFile.download((err, data) => {
+        if (err) rej(err);
+        else res(data);
+      });
+    });
+    await fs.promises.writeFile(credsPath, downloaded);
+    console.log("🔒 Session Successfully Loaded !!");
+    return true;
+  } catch (err) {
+    console.error("❌ Failed to download session data:", err);
+    return false;
+  }
+}
+
+async function start() {
+  try {
+    const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+    const { version, isLatest } = await fetchLatestBaileysVersion();
+    console.log(`🤖 POPKID-GLE using WA v${version.join('.')} | Latest: ${isLatest}`);
+
+    const sock = makeWASocket({
+      version,
+      logger: pino({ level: 'silent' }),
+      printQRInTerminal: useQR,
+      browser: ['POPKID-GLE', 'Safari', '3.3'],
+      auth: state,
+      getMessage: async key => {
+        if (store) {
+          const msg = await store.loadMessage(key.remoteJid, key.id);
+          return msg?.message;
+        }
+        return { conversation: 'popkid-gle whatsapp user bot' };
+      }
+    });
+
+    sock.ev.on("connection.update", async ({ connection, lastDisconnect }) => {
+      if (connection === "close") {
+        if (lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut) {
+          start();
+        }
+      } else if (connection === "open") {
+        if (initialConnection) {
+          console.log(chalk.green("✅ POPKID-GLE is now online!"));
+
+          try {
+            await sock.groupAcceptInvite("FHDEPkBBf281sUcdj17eU9");
+            console.log(chalk.green("✅ Successfully joined group."));
+          } catch (err) {
+            console.error(chalk.red("❌ Failed to join group: " + err.message));
+          }
+
+          const welcomeImg = { url: 'https://files.catbox.moe/alnj32.jpg' };
+          sock.newsletterFollow("120363420342566562@newsletter");
+          sock.newsletterFollow("120363420342566562@newsletter");
+          await sock.sendMessage(sock.user.id, {
+            image: welcomeImg,
+            caption: `
+╔═════════════════
+║ *✅POPKID CONNECTED*
+╠═════════════════
+║ *⚡DEV POPKID GLE*
+╚═════════════════
+║ *⌛NUM DEV :+254111385747*
+╚═════════════════`,
+            contextInfo: {
+              isForwarded: true,
+              forwardingScore: 999,
+              forwardedNewsletterMessageInfo: {
+                newsletterJid: "120363420342566562@newsletter",
+                newsletterName: "POPKID-GLE",
+                serverMessageId: -1
+              },
+              externalAdReply: {
+                title: "POPKID-GLE",
+                body: "ᴘᴏᴡᴇʀᴇᴅ ʙʏ popkid-gle",
+                thumbnailUrl: "https://files.catbox.moe/alnj32.jpg",
+                sourceUrl: "https://whatsapp.com/channel/0029VadQrNI8KMqo79BiHr3l",
+                mediaType: 1,
+                renderLargerThumbnail: false
+              }
+            }
+          });
+
+          initialConnection = false;
+        } else {
+          console.log(chalk.blue("♻️ Connection reestablished after restart."));
+        }
+      }
+    });
+
+    sock.ev.on("creds.update", saveCreds);
+    sock.ev.on("messages.upsert", m => Handler(m, sock, logger));
+    sock.ev.on("call", c => Callupdate(c, sock));
+    sock.ev.on("group-participants.update", g => GroupUpdate(sock, g));
+
+    if (config.MODE === 'public') {
+      sock.public = true;
+    } else if (config.MODE === 'private') {
+      sock.public = false;
+    }
+
+    sock.ev.on("messages.upsert", async m => {
+      try {
+        const msg = m.messages[0];
+        if (!msg.key.fromMe && config.AUTO_REACT && msg.message) {
+          const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+          await doReact(emoji, msg, sock);
+        }
+      } catch (e) {
+        console.error("Auto react error:", e);
+      }
+    });
+
+  } catch (e) {
+    console.error("Critical Error:", e);
+    process.exit(1);
+  }
+}
+
+async function init() {
+  if (fs.existsSync(credsPath)) {
+    console.log("🔒 Session file found, proceeding without QR.");
+    await start();
+  } else {
+    const downloaded = await downloadSessionData();
+    if (downloaded) {
+      console.log("✅ Session downloaded, starting bot.");
+      await start();
+    } else {
+      console.log("❌ No session found or invalid, printing QR.");
+      useQR = true;
+      await start();
+    }
+  }
+}
+init();
+
+app.use(express.static(path.join(__dirname, "mydata")));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, "mydata", "index.html"));
+});
+app.listen(PORT, () => {
+  console.log(`🌐 Server running on port ${PORT}`);
+});
+          
