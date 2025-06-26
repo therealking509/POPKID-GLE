@@ -7,8 +7,8 @@ const videoCommand = async (m, sock) => {
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
   const text = m.body.slice(prefix.length + cmd.length).trim();
 
-  const newsletterJid = "120363290715861418@newsletter";
-  const newsletterName = "Popkid-Xmd";
+  const newsletterJid = "120363420342566562@newsletter";
+  const newsletterName = "Popkid-Gle";
 
   if (!["video", "ytmp4", "v"].includes(cmd)) return;
 
