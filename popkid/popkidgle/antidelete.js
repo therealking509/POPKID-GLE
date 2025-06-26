@@ -9,7 +9,7 @@ const demonContext = {
   forwardingScore: 999,
   isForwarded: true,
   forwardedNewsletterMessageInfo: {
-    newsletterJid: '120363290715861418@newsletter',
+    newsletterJid: '120363420342566562@newsletter',
     newsletterName: '🕶️ popkid recoveries',
     serverMessageId: 143
   }
