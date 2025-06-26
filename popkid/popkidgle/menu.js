@@ -96,6 +96,10 @@ const menu = async (m, sock) => {
 ❏ popkid-ai
 
 🎨 『 *𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗘𝗥𝗦* 』
+❏ security
+❏ sessioncheck
+❏ blockunknown
+❏ autoblock
 ❏ host
 ❏ antispam
 ❏ antibugs
