@@ -100,7 +100,7 @@ async function start() {
                     // Welcome Message
                     try {
                         await Matrix.sendMessage(Matrix.user.id, {
-                            image: { url: 'https://files.catbox.moe/alnj32.jpg' },
+                            image: { url: 'https://files.catbox.moe/shuljc.jpg' },
                             caption: `
 ╔═══════════════════════
 ║ ✅ *POPKID CONNECTED!*
@@ -123,8 +123,8 @@ async function start() {
                                 externalAdReply: {
                                     title: "POPKID-GLE",
                                     body: "ᴘᴏᴡᴇʀᴇᴅ ʙʏ popkid-gle",
-                                    thumbnailUrl: "https://files.catbox.moe/alnj32.jpg",
-                                    sourceUrl: "https://whatsapp.com/channel/0029VadQrNI8KMqo79BiHr3l",
+                                    thumbnailUrl: "https://files.catbox.moe/shuljc.jpg",
+                                    sourceUrl: "https://whatsapp.com/channel/0029VbB6d0KKAwEdvcgqrH26",
                                     mediaType: 1,
                                     renderLargerThumbnail: true
                                 }
