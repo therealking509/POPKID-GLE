@@ -95,7 +95,7 @@ const bible = async (m, sock) => {
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
             newsletterName: 'POPKID BIBLE ❌',
-            newsletterJid: '120363290715861418@newsletter'
+            newsletterJid: '120363420342566562@newsletter'
           }
         }
       }, { quoted: m });
@@ -127,7 +127,7 @@ const bible = async (m, sock) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: 'POPKID BIBLE 📖',
-          newsletterJid: '120363290715861418@newsletter'
+          newsletterJid: '120363420342566562@newsletter'
         }
       }
     }, { quoted: m });
