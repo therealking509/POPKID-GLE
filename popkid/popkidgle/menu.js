@@ -96,6 +96,9 @@ const menu = async (m, sock) => {
 ❏ popkid-ai
 
 🎨 『 *𝗖𝗢𝗡𝗩𝗘𝗥𝗧𝗘𝗥𝗦* 』
+❏ host
+❏ antispam
+❏ antibugs
 ❏ attp
 ❏ gimage
 ❏ mp3
