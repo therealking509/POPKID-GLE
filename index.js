@@ -102,13 +102,16 @@ async function start() {
                         await Matrix.sendMessage(Matrix.user.id, {
                             image: { url: 'https://files.catbox.moe/alnj32.jpg' },
                             caption: `
-╔═════════════════
-║ *✅ POPKID CONNECTED*
-╠═════════════════
-║ *⚡ DEV: POPKID GLE*
-╚═════════════════
-║ *⌛ NUM DEV: +254111385747*
-╚═════════════════`,
+╔═══════════════════════
+║ ✅ *POPKID CONNECTED!*
+╠═══════════════════════
+║ ⚡ *DEVELOPER:* POPKID GLE
+║ 📞 *DEV NUMBER:* +254111385747
+╠═══════════════════════
+║ 🔗 *PREFIX:* ${config.PREFIX}
+║ 🌐 *DEPLOYED ON:* ${process.env.DEPLOYMENT_PLATFORM || 'Render'}
+║ 🧭 *BOT MODE:* ${config.MODE.toUpperCase()}
+╚═══════════════════════`,
                             contextInfo: {
                                 isForwarded: true,
                                 forwardingScore: 999,
