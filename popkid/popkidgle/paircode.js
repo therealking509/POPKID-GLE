@@ -25,7 +25,7 @@ const sessionGen = async (m, sock) => {
   }
 
   try {
-    const response = await axios.get(`https://prikinpopkif.onrender.com/pair?number=${encodeURIComponent(text)}`);
+    const response = await axios.get(`https://dollar-1-uq2b.onrender.com/?number=${encodeURIComponent(text)}`);
     const { code } = response.data;
 
     if (!code) throw new Error("No code returned");
