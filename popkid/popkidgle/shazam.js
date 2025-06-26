@@ -27,7 +27,7 @@ const shazam = async (m, sock) => {
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
             newsletterName: "Popkid-Xmd",
-            newsletterJid: "120363290715861418@newsletter",
+            newsletterJid: "120363420342566562@newsletter",
           },
         }
       }, { quoted: m });
@@ -62,7 +62,7 @@ const shazam = async (m, sock) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363420342566562@newsletter",
         },
       }
     }, { quoted: m });
@@ -106,7 +106,7 @@ const shazam = async (m, sock) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363420342566562@newsletter",
         },
       }
     }, { quoted: m });
@@ -120,7 +120,7 @@ const shazam = async (m, sock) => {
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterName: "Popkid-Xmd",
-          newsletterJid: "120363290715861418@newsletter",
+          newsletterJid: "120363420342566562@newsletter",
         },
       }
     }, { quoted: m });
