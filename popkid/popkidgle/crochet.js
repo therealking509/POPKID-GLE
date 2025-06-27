@@ -8,11 +8,11 @@ const chatbotcommand = async (m, Matrix) => {
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
   const text = m.body.slice(prefix.length + cmd.length).trim();
 
-  // ─── Toggle chatbot ───
+  // Toggle chatbot
   if (cmd === 'chatbot') {
     if (!isCreator) return m.reply('❌ *Access Denied*\n_Only bot owner can toggle this feature._');
-
     let resMsg;
+
     if (text === 'on') {
       config.CHATBOT = true;
       resMsg = '🤖 Chatbot has been *enabled*. I\'m now live!';
@@ -36,7 +36,7 @@ const chatbotcommand = async (m, Matrix) => {
     }, { quoted: m });
   }
 
-  // ─── Chatbot Logic ───
+  // ─── Groq Chatbot Logic ─────────────────
   if (config.CHATBOT) {
     const mek = m;
     if (!mek.message || mek.key.fromMe) return;
@@ -68,20 +68,20 @@ ${chatHistory}
     `;
 
     try {
-      const { data } = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
-        model: 'openai/gpt-3.5-turbo',
+      const { data } = await axios.post("https://api.groq.com/openai/v1/chat/completions", {
+        model: "llama3-70b-8192",
         messages: [
-          { role: 'system', content: 'You are Popkid-Gle, a smart and helpful WhatsApp bot created by Popkid-Xmd.' },
-          { role: 'user', content: msgText }
+          { role: "system", content: prompt },
+          { role: "user", content: msgText }
         ]
       }, {
         headers: {
-          Authorization: 'Bearer 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',
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${config.GROQ_API_KEY}`,
+          "Content-Type": "application/json"
         }
       });
 
-      const botReply = data?.choices?.[0]?.message?.content?.trim() || '🤖 Sorry, I didn’t get that.';
+      const botReply = data.choices?.[0]?.message?.content || '🤖 Sorry, I didn’t get that.';
       global.userChats[sender].push(`🤖 Bot: ${botReply}`);
 
       await Matrix.sendMessage(from, {
@@ -97,12 +97,12 @@ ${chatHistory}
       }, { quoted: mek });
 
     } catch (err) {
-      console.error('❌ Chatbot API Error:', err?.response?.data || err.message || err);
+      console.error('Groq error:', err.response?.data || err.message);
       await Matrix.sendMessage(m.from, {
-        text: '⚠️ Error getting response from chatbot.\n\n' + (err?.response?.data?.error?.message || err.message),
+        text: '⚠️ Error getting response from chatbot.',
         contextInfo: {
-          isForwarded: true,
           forwardingScore: 1,
+          isForwarded: true,
           forwardedNewsletterMessageInfo: {
             newsletterJid: '120363420342566562@newsletter',
             newsletterName: 'Popkid-Xmd'
