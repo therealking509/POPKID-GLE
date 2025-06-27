@@ -11,7 +11,7 @@ const config = {
   CAPTION: process.env.CAPTION || "ᴘᴏᴡᴇʀᴇᴅ by popkid",
 
   // 🤖 GPT/AI API KEYS
-  GPT_API_KEY: process.env.GPT_API_KEY || "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", // Groq key
+  GPT_API_KEY: process.env.GPT_API_KEY || "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", // Groq key
   GEMINI_KEY: process.env.GEMINI_KEY || "AIzaSyCUPaxfIdZawsKZKqCqJcC-GWiQPCXKTDc",
 
   // 🔧 Auto features
