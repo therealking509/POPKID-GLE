@@ -1,7 +1,7 @@
 import axios from "axios";
 import config from "../../config.cjs";
 
-// Temporary memory: { [jid]: { data, timeout } }
+// Temporary storage for per-user song data
 const downloadStore = new Map();
 
 const playHandler = async (msg, sock) => {
@@ -9,12 +9,12 @@ const playHandler = async (msg, sock) => {
     const prefix = config.PREFIX || "!";
     const from = msg?.from;
     const body = msg?.body?.trim();
-    if (!from || !sock || !body?.startsWith(prefix) && !downloadStore.has(from)) return;
+    if (!from || !sock || (!body?.startsWith(prefix) && !downloadStore.has(from))) return;
 
     const command = body.startsWith(prefix) ? body.slice(prefix.length).split(" ")[0].toLowerCase() : null;
     const query = command ? body.slice(prefix.length + command.length).trim() : null;
 
-    // === Handle .play2 <query> ===
+    // === Handle `.play2 <query>` ===
     if (command === "play2") {
       if (!query) {
         await sock.sendMessage(from, { text: "❌ Please provide a song or video name!" }, { quoted: msg });
@@ -24,11 +24,13 @@ const playHandler = async (msg, sock) => {
 
       if (msg.React) await msg.React("⏳");
 
+      // Get MP3 & metadata
       const mp3Res = await axios.get(`https://api.vreden.my.id/api/ytplaymp3?query=${encodeURIComponent(query)}`);
       const mp3Data = mp3Res.data.result;
       const mp3Meta = mp3Data.metadata;
       const mp3Url = mp3Data.download.url;
 
+      // Get MP4 fallback
       let videoData;
       try {
         const vres = await axios.get("https://apis.davidcyriltech.my.id/download/ytmp4?url=" + encodeURIComponent(mp3Meta.url));
@@ -52,33 +54,47 @@ const playHandler = async (msg, sock) => {
         };
       }
 
-      // Store for that user
+      // Store user's song data
       if (downloadStore.has(from)) clearTimeout(downloadStore.get(from).timeout);
       downloadStore.set(from, {
         title: mp3Meta.title,
         mp3Url,
         mp3Meta,
         videoData,
-        timeout: setTimeout(() => downloadStore.delete(from), 3 * 60 * 1000) // expire in 3 mins
+        timeout: setTimeout(() => downloadStore.delete(from), 3 * 60 * 1000) // 3 minutes expiry
       });
 
-      // Send options
+      // Send menu message with image and info
       await sock.sendMessage(from, {
-        text:
+        image: { url: mp3Meta.image },
+        caption:
           `🎶 Choose your download format for: *${mp3Meta.title}*\n\n` +
+          `📄 *Duration:* ${mp3Meta.timestamp}\n` +
+          `👁 *Views:* ${mp3Meta.views.toLocaleString()}\n` +
+          `🎤 *Artist:* ${mp3Meta.author.name}\n\n` +
           `1️⃣ Audio\n` +
           `2️⃣ Document MP3\n` +
           `3️⃣ Document MP4\n` +
           `4️⃣ Video Stream\n` +
           `5️⃣ Voice Note\n\n` +
-          `_Reply with the number (1–5) to receive your preferred format._`
+          `_Reply with the number (1–5) to receive your preferred format._\n\n` +
+          `ᴘᴏᴡᴇʀᴇᴅ ʙʏ ᴘᴏᴘᴋɪᴅ-ɢʟᴇ`,
+        contextInfo: {
+          externalAdReply: {
+            title: mp3Meta.title,
+            body: "Download Menu • Popkid-Gle",
+            thumbnailUrl: mp3Meta.image,
+            sourceUrl: mp3Meta.url,
+            mediaType: 1
+          }
+        }
       }, { quoted: msg });
 
       if (msg.React) await msg.React("✅");
       return;
     }
 
-    // === Handle 1–5 replies (only if user used .play2) ===
+    // === Handle reply numbers 1–5 ===
     if (/^[1-5]$/.test(body) && downloadStore.has(from)) {
       const choice = parseInt(body);
       const { title, mp3Url, mp3Meta, videoData } = downloadStore.get(from);
@@ -114,14 +130,12 @@ const playHandler = async (msg, sock) => {
       await sock.sendMessage(from, sendOptions[choice], { quoted: msg });
       if (msg.React) await msg.React("✅");
 
-      // Clear data after use
       clearTimeout(downloadStore.get(from).timeout);
       downloadStore.delete(from);
-      return;
     }
   } catch (err) {
     console.error("play2 error:", err);
-    await sock.sendMessage(msg.from, { text: "❌ Failed to process request. Try again later." }, { quoted: msg });
+    await sock.sendMessage(msg.from, { text: "❌ Something went wrong while processing your request." }, { quoted: msg });
     if (msg.React) await msg.React("❌");
   }
 };
