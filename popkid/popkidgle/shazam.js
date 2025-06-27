@@ -21,72 +21,61 @@ export default {
   desc: 'Identify music using AudD API',
 
   async exec(m, sock) {
-    const prefix = config.PREFIX;
-    const cmd = m.body.startsWith(prefix)
-      ? m.body.slice(prefix.length).split(' ')[0].toLowerCase()
-      : '';
-    const valid = ['shazam', 'whatmusic', 'songid'];
-    if (!valid.includes(cmd)) return;
-
     if (!m.quoted) {
-      return sock.sendMessage(m.from, {
-        text: `🎵 *Music ID Request*\n\nReply to a voice note or song to identify it.\n\n_Example:_ *.shazam*`,
+      return m.reply(`🎧 *Music ID Request*\n\nPlease reply to a music audio or voice note to identify it.\n_Example:_ *.shazam*`, {
         contextInfo: {
-          forwardingScore: 2,
+          forwardingScore: 5,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
-            newsletterName: 'Popkid-Xmd',
-            newsletterJid: '120363420342566562@newsletter',
+            newsletterName: "Popkid-Xmd",
+            newsletterJid: "120363420342566562@newsletter",
           },
-        },
-      }, { quoted: m });
+        }
+      });
     }
 
     const mime = m.quoted?.mimetype || '';
-    const types = ['audio', 'video', 'application/octet-stream'];
-    if (!types.some(t => mime.startsWith(t))) {
-      return sock.sendMessage(m.from, {
-        text: `❌ *Unsupported File*\nPlease reply to an audio, video, or music file.`,
+    const allowed = ['audio', 'video', 'application/octet-stream'];
+    if (!allowed.some(t => mime.startsWith(t))) {
+      return m.reply(`❌ *Unsupported File*\nPlease reply to an *audio*, *voice note*, or *video clip*.`, {
         contextInfo: {
-          forwardingScore: 2,
+          forwardingScore: 5,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
-            newsletterName: 'Popkid-Xmd',
-            newsletterJid: '120363420342566562@newsletter',
+            newsletterName: "Popkid-Xmd",
+            newsletterJid: "120363420342566562@newsletter",
           },
-        },
-      }, { quoted: m });
+        }
+      });
     }
 
     const media = await m.quoted.download();
-    if (!media) return m.reply('❌ Failed to download media.');
+    if (!media) return m.reply('❌ Failed to download the media.');
 
     const buffer = await toBuffer(media);
     if (buffer.length < 100000) {
-      return sock.sendMessage(m.from, {
-        text: `⚠️ *Audio Too Short*\nTry again with a longer or clearer clip.`,
+      return m.reply(`⚠️ *Audio Too Short*\nPlease use a longer or clearer clip.`, {
         contextInfo: {
-          forwardingScore: 2,
+          forwardingScore: 5,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
-            newsletterName: 'Popkid-Xmd',
-            newsletterJid: '120363420342566562@newsletter',
+            newsletterName: "Popkid-Xmd",
+            newsletterJid: "120363420342566562@newsletter",
           },
-        },
-      }, { quoted: m });
+        }
+      });
     }
 
-    await sock.sendMessage(m.from, {
-      text: `🔍 *Analyzing the song...*`,
+    await m.reply(`🔍 *Analyzing the song... Please wait...*`, {
       contextInfo: {
-        forwardingScore: 2,
+        forwardingScore: 5,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-          newsletterName: 'Popkid-Xmd',
-          newsletterJid: '120363420342566562@newsletter',
+          newsletterName: "Popkid-Xmd",
+          newsletterJid: "120363420342566562@newsletter",
         },
-      },
-    }, { quoted: m });
+      }
+    });
 
     try {
       const form = new FormData();
@@ -100,10 +89,10 @@ export default {
       });
 
       const json = await res.json();
-      if (!json.result) throw new Error('No song identified.');
+      if (!json.result) throw new Error('No match found');
 
       const song = json.result;
-      const text = `
+      const resultText = `
 🎶 *Track Identified!*
 
 • 🎵 *Title:* ${song.title || 'Unknown'}
@@ -112,36 +101,34 @@ export default {
 • 📅 *Release:* ${song.release_date || 'N/A'}
 ${song.spotify?.external_urls?.spotify ? `• 🎧 *Spotify:* ${song.spotify.external_urls.spotify}` : ''}
 ${song.apple_music?.url ? `• 🍎 *Apple Music:* ${song.apple_music.url}` : ''}
-${song.lyrics ? `\n📝 *Lyrics Preview:*\n${song.lyrics.slice(0, 200)}...` : ''}
+${song.lyrics ? `\n📝 *Lyrics Preview:*\n${song.lyrics.slice(0, 300)}...` : ''}
 
 ✅ _Powered by AudD.io_
       `.trim();
 
-      await sock.sendMessage(m.from, {
-        text,
+      return m.reply(resultText, {
         contextInfo: {
-          forwardingScore: 2,
+          forwardingScore: 5,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
-            newsletterName: 'Popkid-Xmd',
-            newsletterJid: '120363420342566562@newsletter',
+            newsletterName: "Popkid-Xmd",
+            newsletterJid: "120363420342566562@newsletter",
           },
-        },
-      }, { quoted: m });
+        }
+      });
 
     } catch (err) {
       console.error('AudD Error:', err);
-      return sock.sendMessage(m.from, {
-        text: `❌ *Failed to identify the track.*\n_Reason:_ ${err.message}`,
+      return m.reply(`❌ *Failed to identify the track.*\n_Reason:_ ${err.message || 'Unknown error'}`, {
         contextInfo: {
-          forwardingScore: 2,
+          forwardingScore: 5,
           isForwarded: true,
           forwardedNewsletterMessageInfo: {
-            newsletterName: 'Popkid-Xmd',
-            newsletterJid: '120363420342566562@newsletter',
+            newsletterName: "Popkid-Xmd",
+            newsletterJid: "120363420342566562@newsletter",
           },
-        },
-      }, { quoted: m });
+        }
+      });
     }
   }
 };
