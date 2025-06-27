@@ -15,28 +15,6 @@ const menu = async (m, sock) => {
     }
   };
 
-  const start = new Date().getTime();
-  await m.React('⚡');
-  const end = new Date().getTime();
-  const responseTime = ((end - start) / 1000).toFixed(2);
-
-  const uptimeSeconds = process.uptime();
-  const hours = Math.floor(uptimeSeconds / 3600);
-  const minutes = Math.floor((uptimeSeconds % 3600) / 60);
-  const seconds = Math.floor(uptimeSeconds % 60);
-  const uptime = `${hours}h ${minutes}m ${seconds}s`;
-
-  let profilePictureUrl = 'https://files.catbox.moe/x18hgf.jpg';
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 1500);
-    const pp = await sock.profilePictureUrl(m.sender, 'image', { signal: controller.signal });
-    clearTimeout(timeout);
-    if (pp) profilePictureUrl = pp;
-  } catch (err) {
-    console.log("❌ Profile picture fetch failed.");
-  }
-
   const categoryMenus = {
     "1": `╭───[ 1️⃣ MAIN & BOT COMMANDS ]
 │ ${prefix}menu
@@ -119,16 +97,57 @@ const menu = async (m, sock) => {
 ╰────────────────────`
   };
 
-  // ✔️ Gle creation 
-  if (isNumberReply && m.quoted && m.quoted.message?.imageMessage && m.quoted.message?.imageMessage?.caption?.includes("REPLY WITH A NUMBER TO SEE A CATEGORY")) {
-    return await sock.sendMessage(m.from, {
-      text: categoryMenus[cmd],
-      contextInfo: newsletterContext
-    }, { quoted: m });
+  // i made the category for two days
+  if (
+    isNumberReply &&
+    m.quoted?.key.fromMe &&
+    m.quoted?.message?.imageMessage?.caption?.includes("REPLY WITH A NUMBER TO SEE A CATEGORY")
+  ) {
+    if (categoryMenus[cmd]) {
+      return await sock.sendMessage(
+        m.from,
+        {
+          text: categoryMenus[cmd],
+          contextInfo: newsletterContext,
+        },
+        { quoted: m }
+      );
+    } else {
+      return await sock.sendMessage(
+        m.from,
+        {
+          text: "❌ Invalid number. Please reply with a number from 1 to 9.",
+          contextInfo: newsletterContext,
+        },
+        { quoted: m }
+      );
+    }
   }
 
-  // 🧾 popkid-Gle
+  // popkid menu2🖥️
   if (cmd === "menu2") {
+    const start = new Date().getTime();
+    await m.React('⚡');
+    const end = new Date().getTime();
+    const responseTime = ((end - start) / 1000).toFixed(2);
+
+    const uptimeSeconds = process.uptime();
+    const hours = Math.floor(uptimeSeconds / 3600);
+    const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+    const seconds = Math.floor(uptimeSeconds % 60);
+    const uptime = `${hours}h ${minutes}m ${seconds}s`;
+
+    let profilePictureUrl = 'https://files.catbox.moe/x18hgf.jpg';
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 1500);
+      const pp = await sock.profilePictureUrl(m.sender, 'image', { signal: controller.signal });
+      clearTimeout(timeout);
+      if (pp) profilePictureUrl = pp;
+    } catch (err) {
+      console.log("❌ Profile picture fetch failed.");
+    }
+
     const mainMenu = `
 ╔═⧉ 𝙿𝙾𝙿𝙺𝙸𝙳 𝙶𝙻𝙴 𝙼𝙴𝙽𝚄 ⧉═╗
 ┃ 🧠 BOT: Popkid-GLE V2.0
@@ -152,13 +171,12 @@ const menu = async (m, sock) => {
 
 ━━━━━━━━━━━━━━
 ⚡ *POPᴋID SYSTEM* ⚡
-━━━━━━━━━━━━━━
-`.trim();
+━━━━━━━━━━━━━━`.trim();
 
     await sock.sendMessage(m.from, {
       image: { url: profilePictureUrl },
       caption: mainMenu,
-      contextInfo: newsletterContext
+      contextInfo: newsletterContext,
     }, { quoted: m });
 
     const songUrls = [
