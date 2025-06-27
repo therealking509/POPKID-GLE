@@ -4,9 +4,18 @@ import config from '../../config.cjs';
 
 const acr = new acrcloud({
   host: 'identify-eu-west-1.acrcloud.com',
-  access_key: '716b4ddfa557144ce0a459344fe0c2c9',
-  access_secret: 'Lz75UbI8g6AzkLRQgTgHyBlaQq9YT5wonr3xhFkf'
+  access_key: 'fOeihi7UdMy3TSZ7F9NuNzM9JtB27wZac6csMPyb',
+  access_secret: '88f64ffc32228ef99f61535fffef6c3b'
 });
+
+const streamToBuffer = async (stream) => {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on('data', chunk => chunks.push(chunk));
+    stream.on('end', () => resolve(Buffer.concat(chunks)));
+    stream.on('error', reject);
+  });
+};
 
 const shazam = async (m, sock) => {
   try {
@@ -14,11 +23,9 @@ const shazam = async (m, sock) => {
     const cmd = m.body.startsWith(prefix)
       ? m.body.slice(prefix.length).split(' ')[0].toLowerCase()
       : '';
-
     const validCommands = ['shazam', 'hansfind', 'whatmusic'];
     if (!validCommands.includes(cmd)) return;
 
-    // Ensure a message is quoted
     if (!m.quoted) {
       return sock.sendMessage(m.from, {
         text: `🎧 *Music ID Request*\n\nPlease reply to a music audio or video file.\n_Example:_ *.shazam*`,
@@ -33,13 +40,11 @@ const shazam = async (m, sock) => {
       }, { quoted: m });
     }
 
-    // Get mimetype of quoted media
     const mime = m.quoted.mimetype || '';
     const isAcceptable = mime.startsWith('audio') || mime.startsWith('video') || mime === 'application/octet-stream';
-
     if (!isAcceptable) {
       return sock.sendMessage(m.from, {
-        text: `🎧 *Music ID Request*\n\nQuoted file must be an *audio*, *video*, or *song file* (e.g. .mp3)\n_Example:_ reply to a voice note or song with *.shazam*`,
+        text: `🎧 *Music ID Request*\n\nQuoted file must be an *audio*, *video*, or *song file* (e.g. .mp3)`,
         contextInfo: {
           forwardingScore: 5,
           isForwarded: true,
@@ -51,9 +56,14 @@ const shazam = async (m, sock) => {
       }, { quoted: m });
     }
 
-    const mediaBuffer = await m.quoted.download();
+    const media = await m.quoted.download();
+    if (!media) throw new Error('Failed to download quoted media.');
+
+    const buffer = Buffer.isBuffer(media) ? media : await streamToBuffer(media);
+    if (buffer.length < 100000) throw new Error('Audio too short or unclear.');
+
     const filePath = `./tmp-${Date.now()}.mp3`;
-    fs.writeFileSync(filePath, mediaBuffer);
+    fs.writeFileSync(filePath, buffer);
 
     await sock.sendMessage(m.from, {
       text: '🔍 *Analyzing the audio...*\nPlease wait...',
@@ -68,7 +78,7 @@ const shazam = async (m, sock) => {
     }, { quoted: m });
 
     const result = await acr.identify(fs.readFileSync(filePath));
-    fs.unlinkSync(filePath); // Clean up
+    fs.unlinkSync(filePath); // cleanup
 
     const { code, msg } = result.status;
     if (code !== 0 || !result.metadata?.music?.length) {
@@ -114,7 +124,7 @@ const shazam = async (m, sock) => {
   } catch (err) {
     console.error('Shazam Error:', err);
     await sock.sendMessage(m.from, {
-      text: '⚠️ *Music not identified.* Please ensure it’s a valid and clear audio sample.',
+      text: `⚠️ *Music not identified.*\n_${err.message || 'Please try a different audio file.'}_`,
       contextInfo: {
         forwardingScore: 5,
         isForwarded: true,
