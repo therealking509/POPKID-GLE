@@ -16,14 +16,11 @@ async function uploadMedia(buffer) {
       body: form,
     });
 
-    if (!response.ok) {
-      throw new Error(`Upload failed: ${response.statusText}`);
-    }
-
+    if (!response.ok) throw new Error(`Upload failed: ${response.statusText}`);
     return await response.text();
   } catch (error) {
     console.error('Upload error:', error);
-    throw new Error('Unable to upload the file. Please try again later.');
+    throw new Error('❌ Upload failed. Try again later.');
   }
 }
 
@@ -37,14 +34,20 @@ function getMediaType(mtype) {
 }
 
 const tourl = async (m, bot) => {
-  const prefix = (m.body.match(/^[\\/!#.]/) || ["/"])[0];
-  const cmd = m.body.slice(prefix.length).split(" ")[0].toLowerCase();
   const validCommands = ['url', 'geturl', 'upload', 'u'];
+  const prefixMatch = m.body?.trim().match(/^([\\/!#.\-])(\w+)/);
+  if (!prefixMatch) return;
 
+  const cmd = prefixMatch[2].toLowerCase();
   if (!validCommands.includes(cmd)) return;
 
-  if (!m.quoted || !['imageMessage', 'videoMessage', 'audioMessage'].includes(m.quoted.mtype)) {
-    return m.reply(`Please reply to an *image*, *video*, or *audio* file to upload.\n\nUsage: *${prefix + cmd}*`);
+  if (
+    !m.quoted ||
+    !['imageMessage', 'videoMessage', 'audioMessage'].includes(m.quoted.mtype)
+  ) {
+    return m.reply(
+      `💀 *Invalid Input!*\nReply to an image, video, or audio.\n\n📥 Usage:\n\`${prefixMatch[1]}${cmd}\``
+    );
   }
 
   try {
@@ -53,44 +56,56 @@ const tourl = async (m, bot) => {
 
     const fileSizeMB = media.length / (1024 * 1024);
     if (fileSizeMB > MAX_FILE_SIZE_MB) {
-      return m.reply(`The file exceeds the maximum allowed size of ${MAX_FILE_SIZE_MB}MB.`);
+      return m.reply(
+        `⛔ *Upload Blocked!*\nFile size > ${MAX_FILE_SIZE_MB}MB`
+      );
     }
 
     const mediaUrl = await uploadMedia(media);
     const mediaType = getMediaType(m.quoted.mtype);
-    const mediaTypeName = mediaType.charAt(0).toUpperCase() + mediaType.slice(1);
+    const mediaTypeName =
+      mediaType.charAt(0).toUpperCase() + mediaType.slice(1);
 
     const contextInfo = {
-      forwardingScore: 5,
+      forwardingScore: 100,
       isForwarded: true,
       forwardedNewsletterMessageInfo: {
-        newsletterName: "Popkid-Gle",
+        newsletterName: "Popkid-Gle-HAX",
         newsletterJid: "120363420342566562@newsletter",
       },
     };
 
-    const caption = 
-`╭───〔 🔗 Media Uploaded 〕
-│ 📁 Type: ${mediaTypeName}
-│ 🌐 URL:
-│ ${mediaUrl}
-╰──── Powered by Popkid XMD`;
+    const caption = `
+🟩──[ 💀 POPKID HACKTOOL ]──🟩
+📁 TYPE   : ${mediaTypeName}
+🌍 LINK   : ${mediaUrl}
+👤 USER   : ${m.pushName || "Anonymous"}
+⏱️ TIME   : ${new Date().toLocaleString('en-GB')}
+✅ STATUS : SUCCESS
+🟩──────────────🟩
+🔗 Popkid XMD Hacker Network
+`.trim();
 
     if (mediaType === 'audio') {
-      await bot.sendMessage(m.from, {
-        text: caption,
-        contextInfo,
-      }, { quoted: m });
+      await bot.sendMessage(
+        m.from,
+        { text: caption, contextInfo },
+        { quoted: m }
+      );
     } else {
-      await bot.sendMessage(m.from, {
-        [mediaType]: { url: mediaUrl },
-        caption,
-        contextInfo,
-      }, { quoted: m });
+      await bot.sendMessage(
+        m.from,
+        {
+          [mediaType]: { url: mediaUrl },
+          caption,
+          contextInfo,
+        },
+        { quoted: m }
+      );
     }
   } catch (err) {
-    console.error('Processing error:', err);
-    m.reply('❌ An error occurred while processing your media.');
+    console.error('Upload error:', err);
+    return m.reply(`🚨 *SYSTEM ERROR:*\nTry again later.`);
   }
 };
 
