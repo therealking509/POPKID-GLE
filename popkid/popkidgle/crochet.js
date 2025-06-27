@@ -36,7 +36,7 @@ const chatbotcommand = async (m, Matrix) => {
     }, { quoted: m });
   }
 
-  // ─── Chatbot Response ───
+  // ─── Chatbot Logic ───
   if (config.CHATBOT) {
     const mek = m;
     if (!mek.message || mek.key.fromMe) return;
@@ -71,12 +71,12 @@ ${chatHistory}
       const { data } = await axios.post('https://openrouter.ai/api/v1/chat/completions', {
         model: 'openai/gpt-3.5-turbo',
         messages: [
-          { role: 'system', content: 'You are Popkid-Gle, a smart and helpful WhatsApp bot created by Popkid-Xmd. Be conversational, helpful, and fun.' },
+          { role: 'system', content: 'You are Popkid-Gle, a smart and helpful WhatsApp bot created by Popkid-Xmd.' },
           { role: 'user', content: msgText }
         ]
       }, {
         headers: {
-          Authorization: 'Bearer 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',
+          Authorization: 'Bearer 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',
           'Content-Type': 'application/json'
         }
       });
@@ -97,9 +97,9 @@ ${chatHistory}
       }, { quoted: mek });
 
     } catch (err) {
-      console.error('AI Response Error:', err);
+      console.error('❌ Chatbot API Error:', err?.response?.data || err.message || err);
       await Matrix.sendMessage(m.from, {
-        text: '⚠️ Error getting response from chatbot.',
+        text: '⚠️ Error getting response from chatbot.\n\n' + (err?.response?.data?.error?.message || err.message),
         contextInfo: {
           isForwarded: true,
           forwardingScore: 1,
