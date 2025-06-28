@@ -7,73 +7,69 @@ const weather = async (m, Matrix) => {
     ? m.body.slice(prefix.length).split(" ")[0].toLowerCase()
     : '';
 
-  if (cmd !== "weather") return;
+  if (cmd === "weather") {
+    const args = m.body.trim().split(" ").slice(1);
+    const city = args.join(" ");
 
-  const args = m.body.trim().split(" ").slice(1);
-  const city = args.join(" ");
+    if (!city) {
+      return await Matrix.sendMessage(m.from, {
+        text: `❗ Usage: *${prefix}weather [city]*`,
+      }, { quoted: m });
+    }
 
-  if (!city) {
-    return await Matrix.sendMessage(m.from, {
-      text: `❗ Usage: *${prefix}weather [city]*`,
-    }, { quoted: m });
-  }
+    const reactionEmojis = ['🌤️', '☁️', '🌧️', '⛈️', '❄️', '🌪️', '🌫️', '🔥', '🌈', '☀️'];
+    const textEmojis = ['🌡️', '🌬️', '💧', '🌂', '🌀', '📍', '📡', '🌎', '🧭', '📊'];
 
-  const apiKey = config.OPENWEATHER_KEY;
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
+    const reactionEmoji = reactionEmojis[Math.floor(Math.random() * reactionEmojis.length)];
+    let textEmoji = textEmojis[Math.floor(Math.random() * textEmojis.length)];
 
-  try {
-    const res = await axios.get(url);
-    const data = res.data;
+    // Ensure emojis are different
+    while (textEmoji === reactionEmoji) {
+      textEmoji = textEmojis[Math.floor(Math.random() * textEmojis.length)];
+    }
 
-    const desc = data.weather[0].description;
-    const temp = data.main.temp;
-    const feels = data.main.feels_like;
-    const humidity = data.main.humidity;
-    const wind = data.wind.speed;
+    await m.React(textEmoji);
 
-    const condition = data.weather[0].main;
-    const emoji = getWeatherEmoji(condition);
+    try {
+      const apiKey = config.OPENWEATHER_KEY;
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric`;
 
-    const text = `*🌦️ WEATHER REPORT: ${data.name}*\n\n` +
-                 `*Condition:* ${desc}\n` +
-                 `*Temperature:* ${temp}°C (Feels like ${feels}°C)\n` +
-                 `*Humidity:* ${humidity}%\n` +
-                 `*Wind:* ${wind} m/s\n\n` +
-                 `_${emoji} Powered by OpenWeather_`;
+      const res = await axios.get(url);
+      const data = res.data;
 
-    await Matrix.sendMessage(m.from, {
-      text,
-      contextInfo: {
-        mentionedJid: [m.sender],
-        forwardingScore: 999,
-        isForwarded: true,
-        forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363290715861418@newsletter',
-          newsletterName: "Popkid",
-          serverMessageId: 143
+      const desc = data.weather[0].description;
+      const temp = data.main.temp;
+      const feels = data.main.feels_like;
+      const humidity = data.main.humidity;
+      const wind = data.wind.speed;
+
+      const text = `*🌦️ WEATHER REPORT: ${data.name} ${reactionEmoji}*\n\n` +
+                   `*Condition:* ${desc}\n` +
+                   `*Temperature:* ${temp}°C (Feels like ${feels}°C)\n` +
+                   `*Humidity:* ${humidity}%\n` +
+                   `*Wind:* ${wind} m/s\n\n` +
+                   `_${textEmoji} Powered by OpenWeather_`;
+
+      await Matrix.sendMessage(m.from, {
+        text,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          forwardingScore: 999,
+          isForwarded: true,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: '120363290715861418@newsletter',
+            newsletterName: "Popkid",
+            serverMessageId: 143
+          }
         }
-      }
-    }, { quoted: m });
+      }, { quoted: m });
 
-  } catch (err) {
-    console.error("Weather API Error:", err?.response?.data || err.message);
-    await Matrix.sendMessage(m.from, {
-      text: `❌ Could not get weather for *${city}*. Please check the city name.`,
-    }, { quoted: m });
-  }
-};
-
-// Optional: Emoji helper
-const getWeatherEmoji = (condition) => {
-  switch (condition.toLowerCase()) {
-    case 'clear': return '☀️';
-    case 'clouds': return '☁️';
-    case 'rain': return '🌧️';
-    case 'thunderstorm': return '⛈️';
-    case 'snow': return '❄️';
-    case 'mist':
-    case 'fog': return '🌫️';
-    default: return '🌤️';
+    } catch (err) {
+      console.error("Weather Error:", err?.response?.data || err.message);
+      await Matrix.sendMessage(m.from, {
+        text: `❌ Could not fetch weather for *${city}*. Please check the name or try again.`,
+      }, { quoted: m });
+    }
   }
 };
 
