@@ -51,7 +51,7 @@ const groupinfo = async (m, sock) => {
         externalAdReply: {
           title: "Popkid GLE • Group Scanner",
           body: "Analyzing WhatsApp Group Data 🧠",
-          thumbnailUrl: "https://i.imgur.com/PopkidGLE.jpg", // 🔁 Your logo here
+          thumbnailUrl: "https://files.catbox.moe/77zp7c.png", // 🔁 Your logo here
           sourceUrl: "https://github.com/devpopkid",         // 🔗 Your GitHub or bot page
           mediaType: 1,
           renderLargerThumbnail: true,
