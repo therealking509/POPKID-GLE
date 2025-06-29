@@ -29,18 +29,20 @@ const groupinfo = async (m, sock) => {
       : '🔓 *Everyone* can chat';
     const creationDate = new Date(metadata.creation * 1000).toLocaleString('en-GB');
 
-    // 🌟 Stylish GLE Layout
-    const text = `╭───〘 *👥 GLE GROUP INFO* 〙───◆
-│ 📛 *Group:* ${groupName}
-│ 🆔 *ID:* ${groupId}
-│ 👥 *Members:* ${members.length}
-│ 🛡️ *Admins:* ${admins.length}
-│ 👑 *Owner:* @${owner.split('@')[0]}
-│ 🔐 *Privacy:* ${announce}
-│ 🕒 *Created:* ${creationDate}
-╰───────────────────────────╮
-   📝 *About:* ${description}
-╰───────────────────────────╯`;
+    const text = `┏━━━━━━━━━━━━━━━┓
+┃ 👥 *GROUP INFO* ┃
+┗━━━━━━━━━━━━━━━┛
+📛 *Name:* ${groupName}
+🆔 *ID:* ${groupId}
+👤 *Owner:* @${owner.split('@')[0]}
+👥 *Members:* ${members.length}
+🛡️ *Admins:* ${admins.length}
+🔐 *Privacy:* ${announce}
+🕒 *Created:* ${creationDate}
+
+📝 *Description:*
+${description}
+────────────────────`;
 
     await sock.sendMessage(m.from, {
       text,
@@ -51,8 +53,8 @@ const groupinfo = async (m, sock) => {
         externalAdReply: {
           title: "Popkid GLE • Group Scanner",
           body: "Analyzing WhatsApp Group Data 🧠",
-          thumbnailUrl: "https://files.catbox.moe/77zp7c.png", // 🔁 Your logo here
-          sourceUrl: "https://github.com/devpopkid",         // 🔗 Your GitHub or bot page
+          thumbnailUrl: "https://files.catbox.moe/77zp7c.png",
+          sourceUrl: "https://github.com/devpopkid",
           mediaType: 1,
           renderLargerThumbnail: true,
           showAdAttribution: true
