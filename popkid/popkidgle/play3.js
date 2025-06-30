@@ -1,53 +1,43 @@
 import fetch from 'node-fetch';
 import config from '../../config.cjs';
 
+const apis = {
+  cyril: (query) => `https://apis.davidcyriltech.my.id/download/ytmp3?url=${encodeURIComponent(query)}&apikey=gifted-md`,
+  dark: (query) => `https://www.dark-yasiya-api.site/download/ytmp3?url=${encodeURIComponent(query)}`,
+  dreaded: (query) => `https://api.dreaded.site/api/ytdl/video?query=${encodeURIComponent(query)}`
+};
+
 const play = async (m, sock) => {
   const prefix = config.PREFIX;
-  const cmd = m.body.startsWith(prefix)
-    ? m.body.slice(prefix.length).split(" ")[0].toLowerCase()
-    : '';
+  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(" ")[0].toLowerCase() : '';
   const text = m.body.slice(prefix.length + cmd.length).trim();
 
-  if (cmd !== "play3") return;
+  if (cmd !== "play") return;
 
   if (!text) {
     return sock.sendMessage(m.from, {
-      text: `❗ *Usage:* \`${prefix}play <song name or YouTube URL>\`\n\n_Example:_\n\`${prefix}play calm down\``
+      text: `❗ *Usage:* \`${prefix}play <song name or YouTube URL>\`\n_Example:_\n\`${prefix}play calm down\``
     }, { quoted: m });
   }
 
+  await m.React('🔍');
+
   try {
-    await m.React('🔍');
+    const result = await searchFromAllApis(text);
 
-    // Step 1: Fallback search using Dreaded API (supports search & link)
-    const searchApi = `https://api.dreaded.site/api/ytdl/video?query=${encodeURIComponent(text)}`;
-    const searchRes = await fetch(searchApi);
-    const searchData = await searchRes.json();
-
-    if (!searchData?.status || !searchData?.result?.url) {
+    if (!result || !result.audio) {
       await m.React('❌');
-      return sock.sendMessage(m.from, { text: '😔 *No results found or invalid query.*' }, { quoted: m });
+      return sock.sendMessage(m.from, { text: '❌ *No working audio found.*' }, { quoted: m });
     }
 
-    const video = searchData.result;
-    const ytUrl = video.url;
-    const title = video.title;
-    const duration = video.duration;
-    const thumbnail = video.thumbnail;
-
-    // Step 2: Try 3 APIs for MP3 download (with fallback)
-    const audioData = await getAudioFromFallbacks(ytUrl);
-    if (!audioData || !audioData.url) {
-      await m.React('❌');
-      return sock.sendMessage(m.from, { text: `❌ *Failed to fetch audio.* Try again later.` }, { quoted: m });
-    }
+    const { title, duration, thumbnail, url: ytUrl, audio, size } = result;
 
     const caption = `
 ╭─🎧 *Now Playing*
 │
 ├ 🎵 *Title:* ${title}
 ├ 🕐 *Duration:* ${duration}
-├ 📦 *Size:* ${audioData.size || 'Unknown'}
+├ 📦 *Size:* ${size || 'Unknown'}
 ├ 🔗 *Source:* [YouTube](${ytUrl})
 │
 ╰─✨ *Requested by:* @${m.sender.split('@')[0]}
@@ -60,7 +50,7 @@ const play = async (m, sock) => {
     }, { quoted: m });
 
     await sock.sendMessage(m.from, {
-      audio: { url: audioData.url },
+      audio: { url: audio },
       mimetype: 'audio/mp4',
       fileName: `${title}.mp3`,
       ptt: false
@@ -68,42 +58,57 @@ const play = async (m, sock) => {
 
     await m.React('✅');
 
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
     await m.React('⚠️');
-    await sock.sendMessage(m.from, {
-      text: '🚨 *Error:* Something went wrong while processing your request.'
-    }, { quoted: m });
+    await sock.sendMessage(m.from, { text: '🚨 *Error occurred. Try again later.*' }, { quoted: m });
   }
 };
 
-async function getAudioFromFallbacks(ytUrl) {
-  const apis = [
-    `https://apis.davidcyriltech.my.id/download/ytmp3?url=${encodeURIComponent(ytUrl)}&apikey=gifted-md`,
-    `https://www.dark-yasiya-api.site/download/ytmp3?url=${encodeURIComponent(ytUrl)}`,
-    `https://api.dreaded.site/api/ytdl/video?query=${encodeURIComponent(ytUrl)}`
-  ];
+async function searchFromAllApis(query) {
+  const apiList = Object.entries(apis);
 
-  for (let url of apis) {
+  for (const [key, buildUrl] of apiList) {
     try {
+      const url = buildUrl(query);
       const res = await fetch(url);
       const json = await res.json();
 
-      const audioUrl =
-        json?.result?.url || json?.data?.url || json?.url || json?.result?.audio?.url;
+      const result = extractResult(json);
 
-      if (audioUrl) {
+      if (result?.audio) {
         return {
-          url: audioUrl,
-          size: json?.result?.size || json?.data?.size || json?.size || null
+          title: result.title || 'Unknown Title',
+          duration: result.duration || 'N/A',
+          thumbnail: result.thumbnail || null,
+          url: result.url || query,
+          audio: result.audio,
+          size: result.size || 'Unknown'
         };
       }
-    } catch (e) {
-      continue;
+    } catch (err) {
+      continue; // Try next API
     }
   }
 
   return null;
+}
+
+function extractResult(data) {
+  if (!data) return null;
+
+  // Try common structures
+  const audio =
+    data.result?.audio?.url || data.data?.url || data.result?.url || data.url;
+
+  return {
+    audio,
+    title: data.result?.title || data.data?.title,
+    thumbnail: data.result?.thumbnail || data.data?.thumbnail,
+    duration: data.result?.duration || data.data?.duration,
+    size: data.result?.size || data.data?.size,
+    url: data.result?.url || data.data?.url
+  };
 }
 
 export default play;
