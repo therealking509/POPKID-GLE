@@ -10,7 +10,7 @@ const play = async (m, sock) => {
     : '';
   const text = m.body.slice(prefix.length + cmd.length).trim();
 
-  if (cmd !== "play") return;
+  if (cmd !== "play3") return;
 
   if (!text) {
     return await sock.sendMessage(m.from, {
