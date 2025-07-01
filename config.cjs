@@ -11,8 +11,8 @@ const config = {
   CAPTION: process.env.CAPTION || "ᴘᴏᴡᴇʀᴇᴅ by popkid",
 
   // 🤖 GPT/AI API KEYS
-  GPT_API_KEY: process.env.GPT_API_KEY || "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", // Groq key
-  GROQ_API_KEY: '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',
+  GPT_API_KEY: process.env.GPT_API_KEY || "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", // Groq key
+  GROQ_API_KEY: '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',
   WEATHER_API_KEY: "ec32bfa1c6b8ff81a636877b6ba302c8",
   GEMINI_KEY: process.env.GEMINI_KEY || "AIzaSyCUPaxfIdZawsKZKqCqJcC-GWiQPCXKTDc",
 
