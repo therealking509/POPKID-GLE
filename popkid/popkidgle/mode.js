@@ -9,61 +9,77 @@ const modeCommand = async (m, Matrix) => {
 
   if (cmd !== 'mode') return;
 
-  const sendStyled = (txt) => Matrix.sendMessage(m.from, {
-    text: txt,
-    contextInfo: {
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: "120363290715861418@newsletter",
-        newsletterName: "Popkid-Xmd"
+  const sendStyled = (msg) =>
+    Matrix.sendMessage(m.from, {
+      text: msg,
+      contextInfo: {
+        externalAdReply: {
+          title: "💻 POPKID-XMD // MODECORE™",
+          body: "System Access Node | Terminal vX.3.2",
+          thumbnailUrl: "https://i.ibb.co/hWsYdX0/pkmode.jpg",
+          mediaType: 1,
+          mediaUrl: "https://github.com/devpopkid",
+          sourceUrl: "https://github.com/devpopkid"
+        },
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363290715861418@newsletter",
+          newsletterName: "🧠 POPKID-XMD // CORE ENGINE"
+        }
       }
-    }
-  });
+    });
 
-  // 🚫 Non-Owner Response
+  // 🛑 Intruder Warning
   if (!isCreator) {
     return sendStyled(`
-╭──────❖「 *❌ Access Denied* 」❖──────╮
-│
-│  🚫 *You are not authorized to use this command!*
-│  🔐 *Only the bot owner can switch modes.*
-│
-╰────────────────────────────╯`);
+┏━[🚨 SYSTEM BREACH DETECTED]━┓
+┃
+┃ ⚠️ *UNAUTHORIZED ACCESS* ⚠️
+┃ 🧑‍💻 User: ${m.pushName || "Unknown"}
+┃ 🔒 Command locked to OWNER only.
+┃
+┃ 🔁 Report logged to POPKID-Net™
+┃ 🧬 Firewall status: *ACTIVE*
+┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛`);
   }
 
-  // ✅ Mode Handling
+  // ✅ Mode Switch
   if (['public', 'private'].includes(text.toLowerCase())) {
     const mode = text.toLowerCase();
     Matrix.public = mode === 'public';
     config.MODE = mode;
 
     return sendStyled(`
-╭─〔 🌐 *Bot Mode Updated* 〕─╮
-│
-│  ✅ *Success!*
-│
-│  🤖 Bot is now in: *${mode.toUpperCase()} MODE*
-│
-│  ✦ In *public*, everyone can use the bot.
-│  ✦ In *private*, only the owner can use it.
-│
-╰────────────────────────╯`);
+┏━[⚙️ MODECORE™ UPDATE]━┓
+┃
+┃ ✅ *MODE OVERRIDE SUCCESS*
+┃ 🔧 MODE: ${mode.toUpperCase()}
+┃
+┃ 🔓 PUBLIC  ➤ Anyone can use bot
+┃ 🔐 PRIVATE ➤ Owner-only access
+┃
+┃ 🧠 ENGINE: POPKID-XMD vX.3.2
+┃ 🌐 Status: LINKED ✔️
+┃
+┗━━━━━━━━━━━━━━━━━━━━━━━┛`);
   }
 
-  // ⚙️ Invalid or Missing Mode
+  // ⚙️ Help Menu
   return sendStyled(`
-╭──〔 ⚙️ *Mode Command Help* 〕──╮
-│
-│  📌 *Usage:*
-│
-│  ➤ *.mode public*
-│     ┗ Everyone can access the bot.
-│
-│  ➤ *.mode private*
-│     ┗ Only you (the owner) can use it.
-│
-│  🔐 *Current Mode:* ${config.MODE?.toUpperCase() || 'UNKNOWN'}
-│
-╰────────────────────────────╯`);
+┏━[🧩 MODECORE™ HELP PANEL]━┓
+┃
+┃ 🧾 *COMMAND USAGE:*
+┃
+┃ ▶ .mode public
+┃    ➤ Unlock bot globally
+┃
+┃ ▶ .mode private
+┃    ➤ Lock bot to OWNER only
+┃
+┃ 📡 Current MODE: ${config.MODE?.toUpperCase() || 'UNKNOWN'}
+┃ 🧠 Core: POPKID-XMD vX.3.2
+┃
+┗━━━━━━━━━━━━━━━━━━━━━━━┛`);
 };
 
 export default modeCommand;
