@@ -32,7 +32,7 @@ const menu = async (m, sock) => {
     }
 
     const menuText = `
-╔═══❖ 「 *𝗣𝗢𝗣𝗞𝗜𝗗-𝗫𝗗 𝗕𝗢𝗧* 」❖═══╗
+╔═❖ 「 *𝗣𝗢𝗣𝗞𝗜𝗗-𝗫𝗗 𝗕𝗢𝗧* 」❖═╗
 ┃ 🤖 *Name:* Popkid-XD
 ┃ 🔧 *Version:* 2.0.0
 ┃ 📡 *Mode:* Public
@@ -40,9 +40,9 @@ const menu = async (m, sock) => {
 ┃ ⏱️ *Uptime:* ${uptime}
 ┃ 🧩 *Prefix:* ${prefix}
 ┃ 👑 *Owner:* Popkid Tech
-╚══════════════════════════╝
+╚════════════════════════╝
 
-🌟 *Welcome to your AI-powered command hub!* 🌟
+🌟 *Welcome to your Popkid-powered command hub!* 🌟
 
 ╭─❖ 🔰 *MAIN MENU* ❖─╮
 │ 🧭 menu  
@@ -85,7 +85,7 @@ const menu = async (m, sock) => {
 │ 🧑‍💼 setownername  
 │ 👤 profile  
 │ 🧾 repo  
-╰──────────────────────╯
+╰─────────────────────╯
 
 ╭─❖ 🧠 *AI & CHAT* ❖─╮
 │ 🤖 ai  
