@@ -40,7 +40,7 @@ const menu = async (m, sock) => {
 ┃ ⏱️ *Uptime:* ${uptime}
 ┃ 🧩 *Prefix:* ${prefix}
 ┃ 👑 *Owner:* Popkid Tech
-╚════════════════════════╝
+╚═════════════════════╝
 
 🌟 *Welcome to your Popkid-powered command hub!* 🌟
 
