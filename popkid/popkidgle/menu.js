@@ -20,7 +20,7 @@ const menu = async (m, sock) => {
     const uptime = `${hours}h ${minutes}m ${seconds}s`;
 
     // Profile Picture Fallback
-    let profilePictureUrl = 'https://files.catbox.moe/x18hgf.jpg';
+    let profilePictureUrl = 'https://files.catbox.moe/ab8mf8.png';
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 1500);
