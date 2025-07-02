@@ -10,7 +10,7 @@ import {
   useMultiFileAuthState,
 } from '@whiskeysockets/baileys';
 
-import { Handler, Callupdate, GroupUpdate } from './scs/nitrox/index.js';
+import { Handler, Callupdate, GroupUpdate } from './popkid/popkidd/popkiddd.js';
 import express from 'express';
 import pino from 'pino';
 import fs from 'fs';
