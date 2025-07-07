@@ -8,17 +8,26 @@ const getProfilePic = async (m, sock) => {
   const text = m.body.slice(prefix.length + cmd.length).trim();
 
   if (cmd === "getpp") {
-    const target = text ? text.replace(/[^0-9]/g, '') + "@s.whatsapp.net" : m.sender;
-    let profilePic;
+    // Step 1: Define target — prioritize replied user, then text number, then sender
+    let target;
 
-    try {
-      profilePic = await sock.profilePictureUrl(target, "image");
-    } catch {
-      profilePic = text
-        ? "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png?q=60"
-        : "https://telegra.ph/file/7cde96ce87ae7d9bd22a4.jpg";
+    if (m.quoted && m.quoted.sender) {
+      target = m.quoted.sender;
+    } else if (text) {
+      target = text.replace(/[^0-9]/g, '') + "@s.whatsapp.net";
+    } else {
+      target = m.sender;
     }
 
+    // Step 2: Try to fetch profile picture
+    let profilePic;
+    try {
+      profilePic = await sock.profilePictureUrl(target, 'image');
+    } catch {
+      profilePic = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
+    }
+
+    // Step 3: Send result
     const caption = `👤 *User JID:* ${target}
 💠 *Powered by Popkid GLE Bot*`;
 
