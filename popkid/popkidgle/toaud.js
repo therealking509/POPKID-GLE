@@ -49,7 +49,7 @@ const popkidplay = async (m, sock) => {
 ┃⏱ *Duration:* ${duration}
 ┃📡 *Processed:* ${pingTime} ms
 ┃🔗 *Source:* YouTube
-┃💽 *Powered by:* PrinceTech API
+┃💽 *Powered by:* Popkid API
 ╰━━━━━━━━━━━━━━━━━⬣`,
     }, { quoted: m });
 
