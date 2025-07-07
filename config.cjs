@@ -15,7 +15,7 @@ const config = {
   GROQ_API_KEY: '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',
   WEATHER_API_KEY: "ec32bfa1c6b8ff81a636877b6ba302c8",
   GEMINI_KEY: process.env.GEMINI_KEY || "AIzaSyCUPaxfIdZawsKZKqCqJcC-GWiQPCXKTDc",
-
+  PRINCETECH_APIKEY: "prince_api_tjhv",
  
   // 🔧 Auto features
   AUTO_STATUS_SEEN: process.env.AUTO_STATUS_SEEN === 'true',
