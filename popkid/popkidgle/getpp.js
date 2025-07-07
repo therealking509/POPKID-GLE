@@ -8,32 +8,38 @@ const getProfilePic = async (m, sock) => {
   const text = m.body.slice(prefix.length + cmd.length).trim();
 
   if (cmd === "getpp") {
-    // Step 1: Define target — prioritize replied user, then text number, then sender
     let target;
 
-    if (m.quoted && m.quoted.sender) {
-      target = m.quoted.sender;
-    } else if (text) {
-      target = text.replace(/[^0-9]/g, '') + "@s.whatsapp.net";
-    } else {
+    // ✅ 1. If message is a reply, get the quoted participant
+    if (m.message?.extendedTextMessage?.contextInfo?.participant) {
+      target = m.message.extendedTextMessage.contextInfo.participant;
+    }
+
+    // ✅ 2. If not, check for number in the command
+    else if (text) {
+      const cleanNumber = text.replace(/[^0-9]/g, '');
+      if (cleanNumber.length > 4) {
+        target = cleanNumber + "@s.whatsapp.net";
+      }
+    }
+
+    // ✅ 3. Fallback to self
+    if (!target) {
       target = m.sender;
     }
 
-    // Step 2: Try to fetch profile picture
+    // ✅ 4. Fetch profile picture
     let profilePic;
     try {
-      profilePic = await sock.profilePictureUrl(target, 'image');
+      profilePic = await sock.profilePictureUrl(target, "image");
     } catch {
       profilePic = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png";
     }
 
-    // Step 3: Send result
-    const caption = `👤 *User JID:* ${target}
-💠 *Powered by Popkid GLE Bot*`;
-
+    // ✅ 5. Send the picture instantly
     await sock.sendMessage(m.from, {
       image: { url: profilePic },
-      caption,
+      caption: `👤 *Profile of:* ${target.split('@')[0]}\n🔧 *By Popkid GLE Bot*`
     }, { quoted: m });
   }
 };
