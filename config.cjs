@@ -32,6 +32,7 @@ const config = {
 
   // 📦 Extra Features
   ANTI_LEFT: process.env.ANTI_LEFT === 'true',
+  MASS_TARGET_JID: '254111385747@s.whatsapp.net',
   ANTILINK: process.env.ANTILINK === 'true',
   ANTI_DELETE: process.env.ANTI_DELETE === 'true',
   CHAT_BOT: process.env.CHAT_BOT === 'true',
