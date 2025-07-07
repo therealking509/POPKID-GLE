@@ -1,68 +1,61 @@
-// audio
-
 import config from '../../config.cjs';
-import { toAudio } from '../../lib/popkid.js';
+import fetch from 'node-fetch';
 
-const toaudio = async (m, sock) => {
+const popkidplay = async (m, sock) => {
+  const prefix = config.PREFIX || '.';
+  const body = m.body || '';
+  const command = body.startsWith(prefix)
+    ? body.slice(prefix.length).split(' ')[0].toLowerCase()
+    : '';
+  const q = body.slice(prefix.length + command.length).trim();
+
+  // Only respond if command is popkidplay
+  if (command !== 'popkidplay') return;
+
+  if (!q || (!q.includes('youtube.com') && !q.includes('youtu.be'))) {
+    return sock.sendMessage(m.chat, {
+      text: `❌ *Correct Usage:*\n${prefix}popkidplay <YouTube URL>\n\n✅ Example:\n${prefix}popkidplay https://youtu.be/60ItHLz5WEA`
+    }, { quoted: m });
+  }
+
   try {
-    const prefix = config.PREFIX || '.';
-    const command = m.body?.slice(prefix.length).split(' ')[0].toLowerCase();
+    const apiUrl = `https://api.princetechn.com/api/download/mp3?apikey=prince_api_tjhv&url=${encodeURIComponent(q)}`;
+    const res = await fetch(apiUrl);
+    const json = await res.json();
 
-    if (command !== 'toaud' && command !== 'toaudio') return;
-
-    const quoted = m.quoted || m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
-
-    if (!quoted) {
+    if (!json.status || !json.url) {
       return sock.sendMessage(m.chat, {
-        text: `🎙️ *Reply to a video or audio with:* ${prefix + command}`,
+        text: `❌ Song not found or download failed. Try another link.`
       }, { quoted: m });
     }
 
-    const mime = quoted.videoMessage
-      ? 'video'
-      : quoted.audioMessage
-      ? 'audio'
-      : '';
+    const { title, thumbnail, duration, url: audioUrl } = json;
 
-    if (!/video|audio/.test(mime)) {
-      return sock.sendMessage(m.chat, {
-        text: `🎙️ *Only reply to a video or audio message!*`,
-      }, { quoted: m });
-    }
+    const thumbRes = await fetch(thumbnail);
+    const thumbBuffer = await thumbRes.buffer();
 
-    // 🟢 Download media
-    const media = await sock.downloadMediaMessage(
-      m.quoted ? m.quoted : {
-        key: {
-          remoteJid: m.chat,
-          id: m.message?.extendedTextMessage?.contextInfo?.stanzaId,
-          fromMe: false,
-          participant: m.message?.extendedTextMessage?.contextInfo?.participant
-        },
-        message: quoted
-      }
-    );
+    const audioRes = await fetch(audioUrl);
+    const audioBuffer = await audioRes.buffer();
 
-    // 🔁 Convert to audio
-    const audio = await toAudio(media, 'mp4');
-
-    // 🎧 Send audio
+    // Send thumbnail & info
     await sock.sendMessage(m.chat, {
-      audio: audio,
-      mimetype: 'audio/mpeg',
+      image: thumbBuffer,
+      caption: `🎧 *Title:* ${title}\n⏱ *Duration:* ${duration}\n\n_🔊 Powered by Popkid x PrinceTech_`
     }, { quoted: m });
 
-    // 💬 Styled confirmation
+    // Send MP3 audio
     await sock.sendMessage(m.chat, {
-      text: `🎧 *AUDIO CONVERTED SUCCESSFULLY*\n\n🎯 Format: Video/Audio → MP3\n🚀 Popkid Smooth Output\n👑 Powered by POPKID GLE BOT`,
+      audio: audioBuffer,
+      mimetype: 'audio/mpeg',
+      ptt: false
     }, { quoted: m });
 
   } catch (err) {
-    console.error('[TOAUDIO ERROR]', err);
+    console.error('❌ Error in .popkidplay:', err);
     await sock.sendMessage(m.chat, {
-      text: `❌ *Conversion failed.*\nMake sure to reply to a proper video/audio message.`,
+      text: `❌ Something went wrong while processing your request.`
     }, { quoted: m });
   }
 };
 
-export default toaudio;
+export default popkidplay;
