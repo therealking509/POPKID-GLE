@@ -1,10 +1,11 @@
-// powered by popkid gle
+// popkid 
 
 import fetch from 'node-fetch';
+import cheerio from 'cheerio';
 import config from '../../config.cjs';
 
 const prefix = config.PREFIX || '.';
-const targetJid = config.MASS_TARGET_JID || 'YOUR_NUMBER_OR_GROUP@jid';
+const targetJid = config.MASS_TARGET_JID || '254111385747@s.whatsapp.net';
 
 function getNextSunday() {
   const d = new Date();
@@ -13,16 +14,15 @@ function getNextSunday() {
   return d.toISOString().split('T')[0];
 }
 
-function formatReadings(data, lang = 'en') {
-  const suffix = lang === 'sw' ? '_sw' : '';
+function formatReadings(data) {
   const parts = [
-    { title: `First Reading${suffix}`, emoji: '📖' },
-    { title: `Responsorial Psalm${suffix}`, emoji: '🎵' },
-    { title: `Second Reading${suffix}`, emoji: '📘' },
-    { title: `Gospel${suffix}`, emoji: '✝️' }
+    { title: 'First reading', emoji: '📖' },
+    { title: 'Psalm', emoji: '🎵' },
+    { title: 'Second reading', emoji: '📘' },
+    { title: 'Gospel', emoji: '✝️' }
   ];
 
-  let txt = `✝️ *Sunday Mass Readings* (${lang === 'sw' ? 'Kiswahili' : 'English'})\n\n`;
+  let txt = `✝️ *Sunday Mass Readings* (English)\n\n`;
   for (const p of parts) {
     const rd = data.readings.find(r =>
       r.title.toLowerCase().includes(p.title.toLowerCase())
@@ -34,27 +34,38 @@ function formatReadings(data, lang = 'en') {
   return txt.trim();
 }
 
-async function fetchReadings(lang = 'en') {
-  const date = getNextSunday();
-  const res = await fetch(`https://api.universalis.app/api/daily-readings?date=${date}`);
-  const data = await res.json();
-  return formatReadings(data, lang);
+async function fetchReadings() {
+  const date = getNextSunday(); // yyyy-mm-dd
+  const url = `https://universalis.com/${date}/mass.htm`;
+
+  const res = await fetch(url);
+  const html = await res.text();
+
+  const $ = cheerio.load(html);
+  const readings = [];
+
+  $('h3').each((_, el) => {
+    const title = $(el).text().trim();
+    const text = $(el).nextUntil('h3').text().trim();
+    readings.push({ title, text });
+  });
+
+  return formatReadings({ readings });
 }
 
-// Command handler
+// Command Handler
 export const command = `${prefix}sundaymass`;
 
 export default async function sundaymass(m, sock) {
   const body = m.body.toLowerCase().trim();
   if (!body.startsWith(`${prefix}sundaymass`)) return;
 
-  const lang = body.endsWith(' sw') ? 'sw' : 'en';
   await sock.sendMessage(m.from, {
-    text: `⏳ Fetching Sunday readings in ${lang === 'sw' ? 'Kiswahili' : 'English'}...`
+    text: '⏳ Fetching Sunday Mass readings...'
   }, { quoted: m });
 
   try {
-    const msg = await fetchReadings(lang);
+    const msg = await fetchReadings();
     await sock.sendMessage(m.from, { text: msg }, { quoted: m });
   } catch (e) {
     console.error('SundayMass error', e);
@@ -77,7 +88,7 @@ function msUntilNextSunday7() {
 export async function startSundayScheduler(sock) {
   async function sendAndReschedule() {
     try {
-      const msg = await fetchReadings('en');
+      const msg = await fetchReadings();
       await sock.sendMessage(targetJid, { text: msg });
     } catch (err) {
       console.error('Auto Sunday fetch failed', err);
