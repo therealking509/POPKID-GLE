@@ -13,7 +13,7 @@ const playHandler = async (msg, sock) => {
     const command = body.startsWith(prefix) ? body.slice(prefix.length).split(" ")[0].toLowerCase() : null;
     const query = command ? body.slice(prefix.length + command.length).trim() : null;
 
-    if (command === "play3") {
+    if (command === "yt") {
       if (!query) {
         await sock.sendMessage(from, { text: "❌ Please provide a search term or YouTube URL!" }, { quoted: msg });
         if (msg.React) await msg.React("❌");
@@ -173,7 +173,7 @@ const playHandler = async (msg, sock) => {
     }
 
   } catch (err) {
-    console.error("play3 error:", err);
+    console.error("yt error:", err);
     await sock.sendMessage(msg.from, {
       text: `❌ Something went wrong: ${err?.message || "Unknown error"}`
     }, { quoted: msg });
