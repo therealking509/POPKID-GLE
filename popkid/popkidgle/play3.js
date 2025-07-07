@@ -22,27 +22,31 @@ const playHandler = async (msg, sock) => {
 
       if (msg.React) await msg.React("⏳");
 
-      // 🧠 Detect if it's a URL
       let videoUrl = query;
       const ytUrlRegex = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//;
+      let searchUsed = false;
+
       if (!ytUrlRegex.test(query)) {
-        // 🔍 Search for the video
+        // 🔍 Accurate YouTube Search
         const searchRes = await axios.get("https://api.princetechn.com/api/search/ytsearch", {
           params: {
-            apikey: "prince_api_tjhv",
+            apikey: config.PRINCETECH_APIKEY || "prince_api_tjhv",
             query
           }
         });
 
-        const firstResult = searchRes.data?.result?.[0];
-        if (!firstResult?.url) throw new Error("No video found for: " + query);
-        videoUrl = firstResult.url;
+        const results = searchRes.data?.result || [];
+        const best = results.find(v => v.title?.toLowerCase().includes(query.toLowerCase()));
+
+        if (!best || !best.url) throw new Error(`No accurate match found for: ${query}`);
+        videoUrl = best.url;
+        searchUsed = true;
       }
 
       // 🎧 Download MP3
       const mp3Res = await axios.get(`https://api.princetechn.com/api/download/yta`, {
         params: {
-          apikey: "prince_api_tjhv",
+          apikey: config.PRINCETECH_APIKEY || "prince_api_tjhv",
           url: videoUrl
         }
       });
@@ -51,13 +55,13 @@ const playHandler = async (msg, sock) => {
       if (!res?.download_url) throw new Error("Failed to fetch MP3");
 
       const mp3Meta = {
-        title: res.title || "Unknown",
+        title: res.title || query,
         url: videoUrl,
         image: res.thumbnail || "https://i.imgur.com/QpS1G4i.jpeg",
         timestamp: res.duration || "Unknown",
         views: "N/A",
         author: {
-          name: "Unknown Artist"
+          name: res.author || "Unknown Artist"
         }
       };
 
@@ -164,6 +168,7 @@ const playHandler = async (msg, sock) => {
 
       await sock.sendMessage(from, sendOptions[choice], { quoted: msg });
       if (msg.React) await msg.React("✅");
+      downloadStore.delete(from); // auto clear
       return;
     }
 
