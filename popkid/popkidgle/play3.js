@@ -15,39 +15,56 @@ const playHandler = async (msg, sock) => {
 
     if (command === "play3") {
       if (!query) {
-        await sock.sendMessage(from, { text: "❌ Please provide a YouTube URL!" }, { quoted: msg });
+        await sock.sendMessage(from, { text: "❌ Please provide a search term or YouTube URL!" }, { quoted: msg });
         if (msg.React) await msg.React("❌");
         return;
       }
 
       if (msg.React) await msg.React("⏳");
 
-      // 🎵 Use PrinceTech API for MP3 (direct URL support)
-      const mp3Res = await axios.get(`https://api.princetechn.com/api/download/mp3`, {
+      // 🧠 Detect if it's a URL
+      let videoUrl = query;
+      const ytUrlRegex = /^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//;
+      if (!ytUrlRegex.test(query)) {
+        // 🔍 Search for the video
+        const searchRes = await axios.get("https://api.princetechn.com/api/search/ytsearch", {
+          params: {
+            apikey: "prince_api_tjhv",
+            query
+          }
+        });
+
+        const firstResult = searchRes.data?.result?.[0];
+        if (!firstResult?.url) throw new Error("No video found for: " + query);
+        videoUrl = firstResult.url;
+      }
+
+      // 🎧 Download MP3
+      const mp3Res = await axios.get(`https://api.princetechn.com/api/download/yta`, {
         params: {
           apikey: "prince_api_tjhv",
-          url: query
+          url: videoUrl
         }
       });
 
-      const res = mp3Res.data;
-      if (!res?.url) throw new Error("Failed to fetch MP3");
+      const res = mp3Res.data?.result;
+      if (!res?.download_url) throw new Error("Failed to fetch MP3");
 
       const mp3Meta = {
         title: res.title || "Unknown",
-        url: query,
+        url: videoUrl,
         image: res.thumbnail || "https://i.imgur.com/QpS1G4i.jpeg",
         timestamp: res.duration || "Unknown",
-        views: res.views || 0,
+        views: "N/A",
         author: {
-          name: res.channel || "Unknown Artist"
+          name: "Unknown Artist"
         }
       };
 
-      // Optional: Try MP4 from fallback
+      // Optional: Try fallback MP4
       let videoData = null;
       try {
-        const fallback = await axios.get("https://iamtkm.vercel.app/downloaders/ytmp4?url=" + encodeURIComponent(query));
+        const fallback = await axios.get("https://iamtkm.vercel.app/downloaders/ytmp4?url=" + encodeURIComponent(videoUrl));
         const data = fallback.data?.data;
         if (!data?.url) throw new Error("Fallback MP4 failed");
         videoData = {
@@ -60,12 +77,12 @@ const playHandler = async (msg, sock) => {
         videoData = null;
       }
 
-      // 🕒 3-minute session
+      // Store download session
       if (downloadStore.has(from)) clearTimeout(downloadStore.get(from).timeout);
       const timeout = setTimeout(() => downloadStore.delete(from), 3 * 60 * 1000);
       downloadStore.set(from, {
         title: mp3Meta.title,
-        mp3Url: res.url,
+        mp3Url: res.download_url,
         mp3Meta,
         videoData,
         timeout
@@ -113,6 +130,7 @@ const playHandler = async (msg, sock) => {
       return;
     }
 
+    // Process reply options 1–5
     if (/^[1-5]$/.test(body) && downloadStore.has(from)) {
       const choice = parseInt(body);
       const { title, mp3Url, mp3Meta, videoData } = downloadStore.get(from);
