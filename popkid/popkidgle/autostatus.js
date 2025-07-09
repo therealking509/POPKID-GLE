@@ -1,12 +1,18 @@
 import config from '../../config.cjs';
-import { setAutoStatus, setAutoStatusMessage, isAutoStatusOn, getAutoStatusMessage } from '../../lib/autostatus.js';
+import {
+  setAutoStatus,
+  setAutoStatusMessage,
+  isAutoStatusOn,
+  getAutoStatusMessage
+} from '../../lib/autostatus.js';
 
 const autostatus = async (m, sock) => {
   const prefix = config.PREFIX;
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+  const body = m.body || '';
+  const cmd = body.startsWith(prefix) ? body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
   const args = m.body.slice(prefix.length + cmd.length).trim();
 
-  if (cmd === 'autostatusreply') {
+  if (cmd === 'autostatus') {
     let replyMsg = '';
 
     if (args === 'on') {
@@ -18,9 +24,9 @@ const autostatus = async (m, sock) => {
     } else if (args.startsWith('set ')) {
       const newMsg = args.slice(4);
       setAutoStatusMessage(newMsg);
-      replyMsg = `📨 Reply message set to:\n\n"${newMsg}"`;
+      replyMsg = `📨 AutoStatus message updated:\n"${newMsg}"`;
     } else {
-      replyMsg = `🛠 *AutoStatus Settings:*\nStatus: ${isAutoStatusOn() ? '🟢 ON' : '🔴 OFF'}\nMessage: "${getAutoStatusMessage()}"`;
+      replyMsg = `🛠 *AutoStatus Settings:*\nStatus: ${isAutoStatusOn() ? '🟢 ON' : '🔴 OFF'}\nReply: "${getAutoStatusMessage()}"`;
     }
 
     await sock.sendMessage(m.from, { text: replyMsg }, { quoted: m });
