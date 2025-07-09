@@ -5,7 +5,7 @@ import config from '../../config.cjs';
 import { smsg } from '../../lib/myfunc.cjs';
 import { handleAntilink } from './antilink.js';
 import { fileURLToPath } from 'url';
-import AutoStatus from '../events/autostatus-runner.js'; // ✅ AutoStatus import
+import AutoStatus from '../../events/autostatus-runner.js'; // ✅ AutoStatus import
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
