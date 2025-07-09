@@ -9,7 +9,8 @@ const config = {
   BOT: process.env.BOT || "hello 👋",
   NEW_CMD: process.env.NEW_CMD || "ᴀᴅᴅᴠᴀʀ\n│ sᴜᴅᴏ\n| popkid",
   CAPTION: process.env.CAPTION || "ᴘᴏᴡᴇʀᴇᴅ by popkid",
-
+  AUTO_STATUS_REPLY: false,
+  AUTO_STATUS_REPLY_MSG: "👋 Hello! I saw your status.",
   // 🤖 GPT/AI API KEYS
   GPT_API_KEY: process.env.GPT_API_KEY || "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", // Groq key
   GROQ_API_KEY: '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',
