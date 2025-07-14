@@ -5,7 +5,6 @@ import config from '../../config.cjs';
 import { smsg } from '../../lib/myfunc.cjs';
 import { handleAntilink } from './antilink.js';
 import { fileURLToPath } from 'url';
-import AutoStatus from '../../events/autostatus-runner.js'; // ✅ AutoStatus import
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,12 +22,6 @@ export const getGroupAdmins = (participants) => {
 
 const Handler = async (chatUpdate, sock, logger) => {
     try {
-        // ✅ Start AutoStatus once
-        if (!sock._autoStatusStarted) {
-            await AutoStatus(sock);
-            sock._autoStatusStarted = true;
-        }
-
         if (chatUpdate.type !== 'notify') return;
 
         const m = serialize(JSON.parse(JSON.stringify(chatUpdate.messages[0])), sock, logger);
@@ -62,7 +55,9 @@ const Handler = async (chatUpdate, sock, logger) => {
         }
 
         if (!sock.public) {
-            if (!isCreator) return;
+            if (!isCreator) {
+                return;
+            }
         }
 
         await handleAntilink(m, sock, logger, isBotAdmins, isAdmins, isCreator);
@@ -76,13 +71,15 @@ const Handler = async (chatUpdate, sock, logger) => {
         for (const file of pluginFiles) {
             if (file.endsWith('.js')) {
                 const pluginPath = path.join(pluginDir, file);
+               // console.log(`Attempting to load plugin: ${pluginPath}`);
 
                 try {
                     const pluginModule = await import(`file://${pluginPath}`);
                     const loadPlugins = pluginModule.default;
                     await loadPlugins(m, sock);
+                   // console.log(`Successfully loaded plugin: ${pluginPath}`);
                 } catch (err) {
-                    console.error(`❌ Failed to load plugin: ${pluginPath}`, err);
+                    console.error(`Failed to load plugin: ${pluginPath}`, err);
                 }
             }
         }
