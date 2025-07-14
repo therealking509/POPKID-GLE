@@ -1,138 +1,115 @@
-import axios from "axios";
-import fs from "fs";
-import path from "path";
-import AdmZip from "adm-zip";
-import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import https from 'https';
+import unzipper from 'unzipper';
+import config from '../../config.cjs';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const updateCommand = async (m, sock) => {
+  const prefix = config.PREFIX || '.';
+  const cmdRaw = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+  const sender = m.sender;
+  const isOwner = sender === config.OWNER_NUMBER + '@s.whatsapp.net';
 
-// Load config
-const configPath = path.join(__dirname, '../config.cjs');
-const config = await import(configPath).then(m => m.default || m).catch(() => ({}));
+  if (!['update', 'restart', 'reboot'].includes(cmdRaw)) return;
 
-// Stylish update command
-const update = async (m, sock) => {
-    const prefix = config.PREFIX || '.';
-    const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
+  if (!isOwner) {
+    return await sock.sendMessage(m.from, {
+      text: '⛔ *Access Denied*\nOnly the bot owner can run this command.',
+    }, { quoted: m });
+  }
 
-    if (cmd !== 'update') return;
-
-    const botNumber = await sock.decodeJid(sock.user.id);
-    if (m.sender !== botNumber) {
-        return sock.sendMessage(m.from, {
-            text: '🚫 *Only the bot can execute this command!*',
-        }, { quoted: m });
-    }
-
-    await m.React('🛰️');
-    const sent = await sock.sendMessage(m.from, {
-        image: { url: 'https://files.catbox.moe/x0ohbm.jpg' }, // Thumbnail
-        caption: `🔍 *Scanning for updates...*\nPlease wait...`,
-        contextInfo: {
-            forwardingScore: 5,
-            isForwarded: true,
-            forwardedNewsletterMessageInfo: {
-                newsletterName: "Popkid-Gle",
-                newsletterJid: "120363420342566562@newsletter",
-            },
-        }
+  if (cmdRaw === 'restart' || cmdRaw === 'reboot') {
+    await sock.sendMessage(m.from, {
+      text: '♻️ *Restarting...*\nPlease wait...',
     }, { quoted: m });
 
-    const editMessage = async (newCaption) => {
-        try {
-            await sock.sendMessage(m.from, {
-                image: { url: 'https://files.catbox.moe/x0ohbm.jpg' },
-                caption: newCaption,
-                contextInfo: {
-                    forwardingScore: 5,
-                    isForwarded: true,
-                    forwardedNewsletterMessageInfo: {
-                        newsletterName: "Popkid-Gle",
-                        newsletterJid: "120363420342566562@newsletter",
-                    },
-                }
-            }, { quoted: m });
-        } catch (e) {
-            console.log("❌ Failed to edit message:", e.message);
-        }
-    };
+    setTimeout(() => process.exit(0), 1000);
+    return;
+  }
+
+  // Handle update
+  if (cmdRaw === 'update') {
+    await sock.sendMessage(m.from, { text: '🔄 *Downloading update, please wait...*' }, { quoted: m });
+
+    const zipUrl = 'https://github.com/devpopkid/POPKID-GLE/archive/refs/heads/main.zip';
+    const zipPath = path.join(process.cwd(), 'update.zip');
+    const tempExtractPath = path.join(process.cwd(), 'update_temp');
 
     try {
-        const { data: commitData } = await axios.get('https://api.github.com/repos/devpopkid/POPKID-GLE/commits/main');
-        const latestCommitHash = commitData.sha;
-
-        const packagePath = path.join(process.cwd(), 'package.json');
-        const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf-8'));
-        const currentHash = packageJson.commitHash || 'unknown';
-
-        if (latestCommitHash === currentHash) {
-            await m.React('✅');
-            return editMessage('✅ *Bot is already up to date!*');
-        }
-
-        await editMessage('📥 *New version found! Downloading update...*');
-
-        const zipUrl = 'https://github.com/devpopkid/POPKID-GLE/archive/refs/heads/main.zip';
-        const zipPath = path.join(process.cwd(), 'update.zip');
-        const writer = fs.createWriteStream(zipPath);
-
-        const response = await axios({ method: 'GET', url: zipUrl, responseType: 'stream' });
-
-        if (response.status !== 200) {
-            throw new Error(`Download failed with status code ${response.status}`);
-        }
-
-        response.data.pipe(writer);
-
-        await new Promise((resolve, reject) => {
-            writer.on('finish', resolve);
-            writer.on('error', reject);
+      // Download zip
+      await new Promise((resolve, reject) => {
+        const file = fs.createWriteStream(zipPath);
+        https.get(zipUrl, (response) => {
+          response.pipe(file);
+          file.on('finish', () => file.close(resolve));
+        }).on('error', (err) => {
+          fs.unlinkSync(zipPath);
+          reject(err);
         });
+      });
 
-        await editMessage('📦 *Extracting update files...*');
+      // Extract ZIP
+      await fs.promises.mkdir(tempExtractPath, { recursive: true });
+      await fs.createReadStream(zipPath)
+        .pipe(unzipper.Extract({ path: tempExtractPath }))
+        .promise();
 
-        const extractTo = path.join(process.cwd(), 'latest');
-        const zip = new AdmZip(zipPath);
-        zip.extractAllTo(extractTo, true);
+      // Get extracted folder
+      const [extractedFolder] = fs.readdirSync(tempExtractPath).filter(f => fs.statSync(path.join(tempExtractPath, f)).isDirectory());
+      const extractedPath = path.join(tempExtractPath, extractedFolder);
 
-        await editMessage('🔁 *Applying update...*');
+      // Recursive copy (excluding critical files)
+      const excluded = ['node_modules', '.git', 'session', 'update.zip', 'config.cjs'];
+      const copyRecursive = (src, dest) => {
+        const entries = fs.readdirSync(src, { withFileTypes: true });
+        for (const entry of entries) {
+          if (excluded.includes(entry.name)) continue;
+          const srcPath = path.join(src, entry.name);
+          const destPath = path.join(dest, entry.name);
+          if (entry.isDirectory()) {
+            if (!fs.existsSync(destPath)) fs.mkdirSync(destPath);
+            copyRecursive(srcPath, destPath);
+          } else {
+            fs.copyFileSync(srcPath, destPath);
+          }
+        }
+      };
 
-        const sourceDir = path.join(extractTo, 'POPKID-GLE-main');
-        await copyFolderSync(sourceDir, process.cwd(), ['package.json', 'config.cjs', '.env']);
+      copyRecursive(extractedPath, process.cwd());
 
-        packageJson.commitHash = latestCommitHash;
-        fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 2));
+      // Cleanup
+      await fs.promises.rm(zipPath, { force: true });
+      await fs.promises.rm(tempExtractPath, { recursive: true, force: true });
 
-        fs.unlinkSync(zipPath);
-        fs.rmSync(extractTo, { recursive: true, force: true });
+      await sock.sendMessage(m.from, {
+        text: `
+🌐 *Update Completed*
+✅ Bot files updated successfully.
 
-        await editMessage('✅ *Update successful! Restarting bot...*');
-        setTimeout(() => process.exit(0), 3000);
+🧠 Use \`${prefix}restart\` to reload the bot now.
+        `.trim(),
+        contextInfo: {
+          forwardingScore: 999,
+          isForwarded: true,
+          externalAdReply: {
+            title: "POPKID-GLE",
+            body: "Update Ready",
+            thumbnailUrl: "https://files.catbox.moe/e1k73u.jpg",
+            mediaType: 1,
+            renderLargerThumbnail: true,
+            sourceUrl: "https://github.com/devpopkid/POPKID-GLE"
+          }
+        }
+      }, { quoted: m });
 
     } catch (err) {
-        console.error("❌ Update Error:", err.message);
-        await m.React("❌");
-        await sock.sendMessage(m.from, {
-            text: `🚨 *Update Failed!*\nReason: ${err.message}`,
-        }, { quoted: m });
+      console.error('Update error:', err);
+      await sock.sendMessage(m.from, {
+        text: '❌ *Update failed.* Please check logs for details.',
+      }, { quoted: m });
     }
+  }
 };
 
-// Utility to copy folders, skip specified files
-async function copyFolderSync(src, dest, skip = []) {
-    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-    for (const item of fs.readdirSync(src)) {
-        const srcPath = path.join(src, item);
-        const destPath = path.join(dest, item);
-        if (skip.includes(item)) continue;
-        const stat = fs.lstatSync(srcPath);
-        if (stat.isDirectory()) {
-            await copyFolderSync(srcPath, destPath, skip);
-        } else {
-            fs.copyFileSync(srcPath, destPath);
-        }
-    }
-}
-
-export default update;
+export default updateCommand;
