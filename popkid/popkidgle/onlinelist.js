@@ -11,44 +11,42 @@ const onlinelist = async (m, sock) => {
       const total = participants.length;
 
       let onlineMembers = [];
+
+      // Loop and subscribe to each user's presence
       for (const user of participants) {
-        const presence = sock.presence[m.from]?.[user.id];
-        const isOnline = presence?.lastKnownPresence === 'available';
-        if (isOnline) onlineMembers.push(user.id);
+        const jid = user.id;
+
+        try {
+          await sock.presenceSubscribe(jid); // Subscribe
+          await new Promise(resolve => setTimeout(resolve, 250)); // Delay to allow response
+
+          const presence = sock.presence[m.from]?.[jid];
+          if (presence?.lastKnownPresence === 'available') {
+            onlineMembers.push(jid);
+          }
+        } catch (e) {
+          console.log(`Failed to get presence for ${jid}`);
+        }
       }
 
       if (onlineMembers.length === 0) {
-        await sock.sendMessage(m.from, {
-          text: `❌ No members are online right now.`,
+        return await sock.sendMessage(m.from, {
+          text: "🟡 *No online members detected right now.*",
         }, { quoted: m });
-        return;
       }
 
-      const formattedList = onlineMembers
-        .map((jid, i) => `├❍ ${i + 1}. @${jid.split('@')[0]}`)
-        .join('\n');
-
-      const response = `
-*╭━[🟢 ᴏɴʟɪɴᴇ ᴍᴇᴍʙᴇʀs]━╮*
-*┋*▧ *ɢʀᴏᴜᴘ*: ${groupMetadata.subject}
-*┋*▧ *ᴛᴏᴛᴀʟ ᴍᴇᴍʙᴇʀs*: ${total}
-*┋*▧ *ᴏɴʟɪɴᴇ*: ${onlineMembers.length}
-╰──────────────╶╶···◈
-
-${formattedList}
-
-> _*⚡ Powered by ${config.OWNER_NAME || 'POPKID'} BOT*_`
-        .trim();
+      const lines = onlineMembers.map((jid, i) => `${i + 1}. @${jid.split('@')[0]}`);
+      const message = `🟢 *Online Members* (${onlineMembers.length}/${total}):\n\n` + lines.join('\n');
 
       await sock.sendMessage(m.from, {
-        text: response,
+        text: message,
         mentions: onlineMembers
       }, { quoted: m });
 
     } catch (err) {
-      console.error("Error in .onlinelist:", err);
+      console.error("onlinelist error:", err);
       await sock.sendMessage(m.from, {
-        text: "❌ *Error:* Unable to fetch online users at this time."
+        text: "❌ *Error:* Unable to fetch online users at this time.",
       }, { quoted: m });
     }
   }
