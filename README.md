@@ -16,7 +16,7 @@
 # ❤️ ғᴏʀᴋ ᴍʏ ʀᴇᴘᴏ
 - <a align="center"><a href="https://github.com/devpopkid/POPKID-GLE/fork"> <img src="https://img.shields.io/badge/FORK%20REPO-colorless?style=for-the-badge&logo=porsche" width="220" height="38.45"/></a></p>
 
-# 🤍 𝗚𝗘𝗧 𝗬𝗢𝗨𝗥 𝗭𝗜𝗣 𝗛𝗘𝗥𝗘
+# 🤍 𝗭𝗜𝗣 𝗙𝗜𝗟𝗘 𝗛𝗘𝗥𝗘
 </a></p>
 - <a href="https://www.mediafire.com/file/lz3npz1yonl1sc0/POPKID-GLE-main.zip/file"><img title="𝗕𝗢𝗧 𝗭𝗜𝗣" src="https://img.shields.io/badge/𝗕𝗢𝗧 𝗭𝗜𝗣-h?color=pink&style=for-the-badge&logo=nike&logoColor=brown" width="240" height="38.45"/></a></p>
 
