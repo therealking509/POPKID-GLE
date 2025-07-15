@@ -1,12 +1,11 @@
 import config from '../../config.cjs';
-import fs from 'fs';
 
 const setpp = async (m, sock, botNumber, isBotAdmins, isAdmins, PopkidTheCreator, mess) => {
   const prefix = config.PREFIX;
   const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
   const text = m.body.slice(prefix.length + cmd.length).trim();
   const quoted = m.quoted;
-  const mime = quoted?.mimetype || '';
+  const mime = quoted?.mimetype || quoted?.mtype || '';
 
   if (cmd === 'setpp') {
     if (!quoted || !/image/.test(mime)) {
