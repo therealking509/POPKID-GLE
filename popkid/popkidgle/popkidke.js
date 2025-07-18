@@ -15,7 +15,7 @@ const play = async (message, client) => {
     : '';
   const query = message.body.slice(prefix.length + cmd.length).trim();
 
-  if (cmd === 'play2') {
+  if (cmd === 'play3') {
     if (!query) {
       return message.reply("❌ Please provide a search query!");
     }
