@@ -95,7 +95,7 @@ _🔥 Powered by Popkid-MD 💜_`;
             title: "🔥 Ultimate Insult Bot",
             body: "Type .insult to roast someone",
             mediaType: 1,
-            thumbnailUrl: "https://files.catbox.moe/kffzth.jpg",
+            thumbnailUrl: "https://files.catbox.moe/3ix7cj.jpg",
             sourceUrl: "https://whatsapp.com/channel/0029VbB6d0KKAwEdvcgqrH26",
             renderLargerThumbnail: true
           }
