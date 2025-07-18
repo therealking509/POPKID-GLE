@@ -23,7 +23,7 @@ const play = async (message, client) => {
 
       const video = searchResults.videos[0];
       const caption = `
-〔 𝕭𝖚𝖉𝖉𝖞 𝖒𝖊𝖉𝖎𝖆 𝖕𝖑𝖆𝖞𝖊𝖗 〕
+✞︎😇😇𝗣𝗢𝗣𝗞𝗜𝗗 𝗚𝗟𝗘😇😇✞︎
 
 ┃▸ Title: ${video.title}
 ┃▸ Duration: ${video.timestamp}
