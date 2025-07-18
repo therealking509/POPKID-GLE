@@ -96,7 +96,7 @@ _🔥 Powered by Popkid-MD 💜_`;
             body: "Type .insult to roast someone",
             mediaType: 1,
             thumbnailUrl: "https://files.catbox.moe/kffzth.jpg",
-            sourceUrl: "https://whatsapp.com/channel/0029Vak0genJ93wQXq3q6X3h",
+            sourceUrl: "https://whatsapp.com/channel/0029VbB6d0KKAwEdvcgqrH26",
             renderLargerThumbnail: true
           }
         }
