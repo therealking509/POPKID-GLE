@@ -67,7 +67,7 @@ const dare = async (m, sock) => {
             title: "𝕯𝖆𝖗𝖊 𝕮𝖍𝖆𝖑𝖑𝖊𝖓𝖌𝖊 🎲",
             body: "Ready for the wildest challenge?",
             thumbnailUrl: "https://files.catbox.moe/ixttdp.jpg",
-            sourceUrl: "https://whatsapp.com/channel/0029Vak0genJ93wQXq3q6X3h",
+            sourceUrl: "https://whatsapp.com/channel/0029VbB6d0KKAwEdvcgqrH26",
             mediaType: 1,
             renderLargerThumbnail: true,
           },
