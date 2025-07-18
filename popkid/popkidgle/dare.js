@@ -66,7 +66,7 @@ const dare = async (m, sock) => {
           externalAdReply: {
             title: "𝕯𝖆𝖗𝖊 𝕮𝖍𝖆𝖑𝖑𝖊𝖓𝖌𝖊 🎲",
             body: "Ready for the wildest challenge?",
-            thumbnailUrl: "https://files.catbox.moe/ixttdp.jpg",
+            thumbnailUrl: "https://files.catbox.moe/3ix7cj.jpg",
             sourceUrl: "https://whatsapp.com/channel/0029VbB6d0KKAwEdvcgqrH26",
             mediaType: 1,
             renderLargerThumbnail: true,
