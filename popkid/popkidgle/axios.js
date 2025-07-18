@@ -74,7 +74,7 @@ sand: "https://api-pink-venom.vercel.app/api/logo?url=https://en.ephoto360.com/w
 
       if (data.status && data.result && data.result.download_url) {
         const imageUrl = data.result.download_url;
-        await bot.sendMessage(message.from, { image: { url: imageUrl }, caption: "> logo by Buddy-XTR" }, { quoted: message });
+        await bot.sendMessage(message.from, { image: { url: imageUrl }, caption: "> logo by POPKID-GLE" }, { quoted: message });
 
         await bot.sendMessage(message.from, { react: { text: '✅', key: message.key } });
       } else {
