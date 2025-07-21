@@ -9,17 +9,12 @@ const play = async (message, client) => {
   const query = message.body.slice(prefix.length + cmd.length).trim();
 
   if (cmd === 'play3') {
-    if (!query) {
-      return message.reply("❌ Please provide a search query!");
-    }
-
+    if (!query) return message.reply("❌ Please provide a search query!");
     await message.React('🎧');
 
     try {
       const searchResults = await ytSearch(query);
-      if (!searchResults.videos.length) {
-        return message.reply("❌ No results found!");
-      }
+      if (!searchResults.videos.length) return message.reply("❌ No results found!");
 
       const video = searchResults.videos[0];
       const caption = `
@@ -34,15 +29,25 @@ const play = async (message, client) => {
 
 Reply with any option:
 
-1️⃣ Video
-2️⃣ Audio
-3️⃣ Video (Document)
+1️⃣ Video  
+2️⃣ Audio  
+3️⃣ Video (Document)  
 4️⃣ Audio (Document)
 `;
 
+      const newsletterContext = {
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterName: "ᴘᴏᴘᴋɪᴅ ɢʟᴇ",
+          newsletterJid: "120363420342566562@newsletter"
+        }
+      };
+
       const optionsMsg = await client.sendMessage(message.from, {
         image: { url: video.thumbnail },
-        caption: caption
+        caption: caption.trim(),
+        contextInfo: newsletterContext
       }, { quoted: message });
 
       const optionsMsgId = optionsMsg.key.id;
@@ -63,7 +68,7 @@ Reply with any option:
           });
 
           let apiUrl, format, mimeType, responseText;
-          
+
           switch (selectedOption) {
             case '1':
               apiUrl = `https://apis.davidcyriltech.my.id/download/ytmp4?url=${videoUrl}`;
@@ -92,21 +97,19 @@ Reply with any option:
               return message.reply("❌ Invalid selection! Please reply with 1, 2, 3, or 4.");
           }
 
-          // Send processing message
+          // Simulate a progress bar
           const processingMsg = await client.sendMessage(chatJid, { 
-            text: `🔄 Processing your request...\n\n[${' '.repeat(20)}] 0%`,
+            text: `🔄 Processing your request...\n\n[                    ] 0%`,
             quoted: response 
           });
 
-          // Progress bar animation
           for (let i = 5; i <= 100; i += 5) {
-            const progress = Math.round(i / 5);
-            const progressBar = '█'.repeat(progress) + ' '.repeat(20 - progress);
+            const progressBar = '█'.repeat(i / 5) + ' '.repeat(20 - i / 5);
             await client.sendMessage(chatJid, {
               edit: processingMsg.key,
               text: `🔄 Processing your request...\n\n[${progressBar}] ${i}%`
             });
-            await new Promise(resolve => setTimeout(resolve, 200));
+            await new Promise(resolve => setTimeout(resolve, 150));
           }
 
           try {
@@ -126,28 +129,18 @@ Reply with any option:
               [format]: { url: downloadUrl },
               mimetype: mimeType,
               caption: responseText,
-              contextInfo: {
-                mentionedJid: [message.sender],
-                newsletterJid: chatJid,
-                forwardingScore: 999,
-                isForwarded: true
-              }
+              contextInfo: newsletterContext
             };
 
             if (format === 'document') {
-              mediaMessage.fileName = `Buddymedia_${format}${format.includes('audio') ? '.mp3' : '.mp4'}`;
+              mediaMessage.fileName = `PopkidGLE_${format}.${mimeType?.includes('video') ? 'mp4' : 'mp3'}`;
             }
 
-            // Delete progress message before sending media
-            await client.sendMessage(chatJid, {
-              delete: processingMsg.key
-            });
+            await client.sendMessage(chatJid, { delete: processingMsg.key });
+            await client.sendMessage(chatJid, mediaMessage, { quoted: response });
 
-            await client.sendMessage(chatJid, mediaMessage, {
-              quoted: response
-            });
-          } catch (error) {
-            console.error("Download error:", error);
+          } catch (err) {
+            console.error("Download error:", err);
             await client.sendMessage(chatJid, {
               edit: processingMsg.key,
               text: "❌ An error occurred during download."
@@ -155,8 +148,9 @@ Reply with any option:
           }
         }
       });
-    } catch (error) {
-      console.error("Search error:", error);
+
+    } catch (err) {
+      console.error("Search error:", err);
       return message.reply("❌ An error occurred while searching.");
     }
   }
