@@ -1,54 +1,95 @@
-import config from '../../config.cjs';
+const fs = require('fs');
+const path = require('path');
+const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
 
-const setpp = async (m, sock, botNumber, isBotAdmins, isAdmins, PopkidTheCreator, mess) => {
-  const prefix = config.PREFIX;
-  const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(' ')[0].toLowerCase() : '';
-  const text = m.body.slice(prefix.length + cmd.length).trim();
+async function setProfilePicture(sock, m) {
+  const chatId = m.from;
+  const isOwner = m.key.fromMe;
 
-  if (cmd === 'setpp') {
-    const quoted = m.quoted;
-    const mime = quoted?.mimetype || '';
+  try {
+    await m.React('⏳');
 
-    // Check if user replied to an image
-    if (!quoted || !/image/.test(mime)) {
-      return sock.sendMessage(m.from, {
-        text: `*Reply to an image with caption:* ${prefix}setpp [gc]`,
+    // Owner Check
+    if (!isOwner) {
+      const errorText = `*SetPP▰▰▰▱▱ 403 - Unauthorized*\n\n🚫 *Only the bot owner can use this command.*`;
+      await sock.sendMessage(chatId, {
+        text: errorText,
+        contextInfo: {
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363420342566562@newsletter",
+            newsletterName: "Popkid-Xmd",
+            serverMessageId: m.key.id
+          }
+        }
       }, { quoted: m });
+      return;
     }
 
-    await m.React('🖼️');
+    // Image Validation
+    const quoted = m.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+    const image = quoted?.imageMessage || quoted?.stickerMessage;
 
-    try {
-      const mediaBuffer = await quoted.download(); // Get image buffer
-
-      if (!mediaBuffer || mediaBuffer.length === 0) {
-        return sock.sendMessage(m.from, {
-          text: '❌ Failed to download image.',
-        }, { quoted: m });
-      }
-
-      if (text === 'gc') {
-        // Group profile picture
-        if (!m.isGroup) return sock.sendMessage(m.from, { text: mess.group }, { quoted: m });
-        if (!isBotAdmins) return sock.sendMessage(m.from, { text: mess.botAdmin }, { quoted: m });
-        if (!isAdmins && !PopkidTheCreator) return sock.sendMessage(m.from, { text: mess.admin }, { quoted: m });
-
-        await sock.updateProfilePicture(m.from, mediaBuffer);
-        return sock.sendMessage(m.from, { text: '✅ Group profile picture updated successfully!' }, { quoted: m });
-
-      } else {
-        // Bot profile picture
-        if (!PopkidTheCreator) return sock.sendMessage(m.from, { text: mess.owner }, { quoted: m });
-
-        await sock.updateProfilePicture(botNumber, mediaBuffer);
-        return sock.sendMessage(m.from, { text: '✅ Bot profile picture updated successfully!' }, { quoted: m });
-      }
-
-    } catch (err) {
-      console.error('❌ Error in setpp:', err);
-      return sock.sendMessage(m.from, { text: '❌ Failed to update profile picture!' }, { quoted: m });
+    if (!image) {
+      const errorText = `*SetPP▰▰▱▱▱ 400 - Bad Request*\n\n⚠️ *Reply to an image or sticker* to set as bot's profile picture.`;
+      await sock.sendMessage(chatId, {
+        text: errorText,
+        contextInfo: {
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: "120363420342566562@newsletter",
+            newsletterName: "Popkid-Xmd",
+            serverMessageId: m.key.id
+          }
+        }
+      }, { quoted: m });
+      return;
     }
+
+    // Download Image
+    const tmpDir = path.join(process.cwd(), 'tmp');
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
+
+    const stream = await downloadContentFromMessage(image, 'image');
+    let buffer = Buffer.from([]);
+    for await (const chunk of stream) {
+      buffer = Buffer.concat([buffer, chunk]);
+    }
+
+    const filePath = path.join(tmpDir, `pp_${Date.now()}.jpg`);
+    fs.writeFileSync(filePath, buffer);
+
+    // Set Profile Picture
+    await sock.updateProfilePicture(sock.user.id, { url: filePath });
+    fs.unlinkSync(filePath);
+    await m.React('✅');
+
+    const successText = `*SetPP▰▰▰▰▰ 200 - Success*\n\n🖼️ *Bot profile picture updated successfully!*`;
+    await sock.sendMessage(chatId, {
+      text: successText,
+      contextInfo: {
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363420342566562@newsletter",
+          newsletterName: "Popkid-Xmd",
+          serverMessageId: m.key.id
+        }
+      }
+    }, { quoted: m });
+
+  } catch (err) {
+    console.error("SetPP Error:", err);
+    await m.React('❌');
+
+    const failText = `*SetPP▰▰▰▱▱ 500 - Internal Error*\n\n❌ *Something went wrong while setting profile picture.*`;
+    await sock.sendMessage(chatId, {
+      text: failText,
+      contextInfo: {
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: "120363420342566562@newsletter",
+          newsletterName: "Popkid-Xmd",
+          serverMessageId: m.key.id
+        }
+      }
+    }, { quoted: m });
   }
-};
+}
 
-export default setpp;
+module.exports = setProfilePicture;
