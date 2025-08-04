@@ -3,7 +3,6 @@ import path from 'path';
 import unzipper from 'unzipper';
 import config from '../../config.cjs';
 
-//node
 const updateCommand = async (m, sock) => {
   const prefix = config.PREFIX || '.';
   const cmdRaw = m.body.startsWith(prefix)
@@ -42,7 +41,9 @@ const updateCommand = async (m, sock) => {
       const zipPath = path.join(process.cwd(), 'update.zip');
       const tempExtractPath = path.join(process.cwd(), 'update_temp');
 
+      // Download ZIP from GitHub
       const downloadZip = async () => {
+        console.log('[+] Fetching ZIP file...');
         const res = await fetch(zipUrl);
         if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
         const buffer = await res.arrayBuffer();
@@ -54,6 +55,7 @@ const updateCommand = async (m, sock) => {
       const stat = fs.statSync(zipPath);
       if (stat.size < 1000) throw new Error('Downloaded ZIP too small or invalid.');
 
+      console.log('[+] ZIP downloaded. Extracting...');
       await fs.promises.mkdir(tempExtractPath, { recursive: true });
 
       await fs.createReadStream(zipPath)
@@ -67,11 +69,16 @@ const updateCommand = async (m, sock) => {
 
       const extractedPath = path.join(tempExtractPath, extractedFolders[0]);
 
+      // Recursive copy with exclusions
       const copyRecursive = (src, dest) => {
         const entries = fs.readdirSync(src, { withFileTypes: true });
         for (const entry of entries) {
           const srcPath = path.join(src, entry.name);
           const destPath = path.join(dest, entry.name);
+
+          // Exclude specific config files
+          if (['.env', 'config.cjs'].includes(entry.name)) continue;
+
           if (entry.isDirectory()) {
             if (!fs.existsSync(destPath)) fs.mkdirSync(destPath);
             copyRecursive(srcPath, destPath);
@@ -81,14 +88,25 @@ const updateCommand = async (m, sock) => {
         }
       };
 
+      console.log('[+] Copying files...');
       copyRecursive(extractedPath, process.cwd());
 
+      console.log('[+] Cleaning up...');
       fs.unlinkSync(zipPath);
       fs.rmSync(tempExtractPath, { recursive: true, force: true });
 
-      // Envoi d'un message simple sans bouton
+      // Send message with restart button
       await sock.sendMessage(m.from, {
-        text: `✅ *Update complete!*\n\nPlease restart the bot manually.`,
+        text: `✅ *Update complete!*\n\nPress the button below to restart the bot and apply updates.`,
+        buttons: [
+          {
+            buttonId: `${prefix}restart`,
+            buttonText: { displayText: '🔁 Restart Now' },
+            type: 1
+          }
+        ],
+        footer: 'POP Bot Updater',
+        headerType: 1
       }, { quoted: m });
 
     } catch (err) {
