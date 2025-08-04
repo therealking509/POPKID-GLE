@@ -9,7 +9,7 @@
     "stop": "pm2 stop POPKID-GLE",
     "restart": "pm2 restart POPKID-GLE"
   },
-  "keywords": ["inconnu-boy", "whatsapp-bot", "whatsapp md bot"],
+  "keywords": ["gle", "whatsapp-bot", "whatsapp md bot"],
   "author": "POPKID-GLE",
   "license": "ISC",
   "dependencies": {
