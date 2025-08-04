@@ -1,7 +1,7 @@
 {
   "name": "POPKID-GLE",
   "version": "2.0.0",
-  "description": "your latest whatsapp automation",
+  "description": "Better than before",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -9,11 +9,11 @@
     "stop": "pm2 stop POPKID-GLE",
     "restart": "pm2 restart POPKID-GLE"
   },
-  "keywords": ["popkid-gle", "whatsapp-bot", "whatsapp md bot"],
+  "keywords": ["inconnu-boy", "whatsapp-bot", "whatsapp md bot"],
   "author": "POPKID-GLE",
   "license": "ISC",
   "dependencies": {
-    "@whiskeysockets/baileys": "npm:baileys-mod@latest",
+    "@whiskeysockets/baileys": "npm:baileys-pro@0.0.5",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@google/generative-ai": "^0.9.0",
     "@hapi/boom": "^10.0.1",
